@@ -1,10 +1,16 @@
 import React, { PropsWithChildren } from "react";
+import { Inter } from "next/font/google";
+import Header from "../components/Header";
+import ThemeProvider from "../components/ThemeProvider";
+const inter = Inter({ subsets: ["latin"] });
 
 export default function VisualizeLayout({ children }: PropsWithChildren) {
   return (
-    <div className="w-screen h-screen">
-      <div className="w-full h-16 border-b border-gray-400 bg-yellow-200"></div>
-      {children}
-    </div>
+    <ThemeProvider>
+      <div className="w-screen h-screen">
+        <Header />
+        {children}
+      </div>
+    </ThemeProvider>
   );
 }
