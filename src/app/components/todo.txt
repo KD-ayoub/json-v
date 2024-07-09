@@ -9,3 +9,7 @@ dark mode
 background-hover: #222222
 text: #B8BBBE
 text-hover: #DCDDDE
+
+
+-----------------resource-----------
+https://stackoverflow.com/questions/60190965/zoom-scale-at-mouse-position
