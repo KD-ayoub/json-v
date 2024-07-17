@@ -13,3 +13,4 @@ text-hover: #DCDDDE
 
 -----------------resource-----------
 https://stackoverflow.com/questions/60190965/zoom-scale-at-mouse-position
+https://www.youtube.com/watch?v=_39sNRsvOuw
