@@ -9,6 +9,7 @@ import Zoomable from "../components/Zoomable";
 import debounce from "lodash/debounce";
 import Image from "next/image";
 import Forest from "@/app/assets/images/forest.jpeg";
+import { debouncedFunction, parsEditorData } from "./lib/parsingJson";
 
 enum CanvasPosition {
   CENTER = "center",
@@ -103,50 +104,26 @@ type NodeType = {
 export default function Visualize() {
   const [editorData, setEditorData] = useState({});
   const [nodesData, setNodesData] = useState<NodeType[]>([]);
-  console.log("data...", editorData);
-  function calculateDimensions(obj: any) {
-    const keys = Object.keys(obj);
-    const values = Object.values(obj).map(String);
-    const longestKey = keys.reduce((a, b) => a.length > b.length ? a: b);
-    const longestValue = values.reduce((a, b) => a.length > b.length ? a: b);
-    const width = (longestKey.length + longestValue.length + 4) *7;
-    const height = keys.length * 18 + 20;
-    console.log("values here..", longestKey.length, longestValue.length, width);
-    return { width, height }
+  function handleOnchange(event: string | undefined) {
+    try {
+      const json = JSON.parse(event || "");
+      // const { width, height } = debouncedFunction(json)!;
+      const { width, height } = parsEditorData(json);
+      console.log("entered((((((")
+      setNodesData((prev) => [
+        ...prev,
+        {
+          id: (prev.length + 1).toString(), // Ensure unique ID
+          height,
+          width,
+          data: json,
+        },
+      ]);
+    } catch (err) {
+      console.log("JSON parese error");
+    }
   }
-  function parsEditorData(obj: any) {
-    console.log("obj here", obj);
-    const dummyElement = document.createElement('div');
-    dummyElement.style.fontSize = "12px";
-    dummyElement.innerHTML = JSON.stringify(obj);
-    dummyElement.style.width = "fit-content";
-    dummyElement.style.height = "fit-content";
-    dummyElement.style.padding = "10px";
-    dummyElement.style.fontWeight = "500";
-    document.body.appendChild(dummyElement);
-
-    console.log("finally", dummyElement.getBoundingClientRect(), obj);
-    document.body.removeChild(dummyElement);
-    // let append = nodesData;
-    // append.push({
-    //   id: "1",
-    //   height: 200,
-    //   width: 200,
-    //   data: obj,
-    // });
-    const { width, height } = calculateDimensions(obj);
-    setNodesData((prevNodesData) => [
-      ...prevNodesData,
-      {
-        id: (prevNodesData.length + 1).toString(), // Ensure unique ID
-        height: height,
-        width: width,
-        data: obj,
-      },
-    ]);
-  }
-  const debouncedFunction = debounce((value: unknown) => parsEditorData(value), 4000);
-  console.log("nodes....", nodesData);
+  console.log("nodenodenodenode", nodesData);
   return (
     <div className="w-full h-[calc(100%_-_4rem)]">
       <Container style={{ height: "100%", background: "#80808080" }}>
@@ -161,16 +138,7 @@ export default function Visualize() {
               contextmenu: false,
             }}
             onValidate={(errors) => console.log("Error_Here", errors)}
-            onChange={(e) => {
-              try {
-                console.log("editor", JSON.parse(e || "ssfsd"));
-                const editor = JSON.parse(e || "");
-                // setEditorData(JSON.parse(e || ""));
-                debouncedFunction(JSON.parse(e || ""));
-              } catch (err) {
-                console.log("JSON parese error");
-              }
-            }}
+            onChange={handleOnchange}
           />
         </Section>
         <Bar size={2} style={{ background: "#000", cursor: "col-resize" }} />
@@ -183,19 +151,28 @@ export default function Visualize() {
                 readonly={true}
                 zoomable={false}
                 nodes={nodesData}
-                fit={true}
                 // edges={edges}
                 node={
                   <Node
                     style={{ stroke: "#465872", fill: "#F5F8FA" }}
                     label={<Label style={{ fill: "#535353" }} />}
                   >
-                    { (event) => <foreignObject height={event.height} width={event.width} >
-                      <span style={{ padding: "10px 10px 10px 10px", width: "100%", display: "block", fontSize: 12}}>
-                        <span>key: </span>
-                        "{event.node.data.key}"
-                      </span>
-                      {/* <span style={{ padding: "10px 10px 0px 10px", width: "100%", display: "block", fontSize: 12}}>
+                    {(event) => (
+                      <foreignObject height={event.height} width={event.width}>
+                        <span
+                          style={{
+                            padding: "10px 10px 10px 10px",
+                            width: "100%",
+                            display: "block",
+                            fontSize: 12,
+                          }}
+                        >
+                          <span>key: </span>
+                          {typeof event.node.data.key === "string"
+                            ? `"${event.node.data.key}"`
+                            : event.node.data.key}
+                        </span>
+                        {/* <span style={{ padding: "10px 10px 0px 10px", width: "100%", display: "block", fontSize: 12}}>
                         <span>sdsd: </span>
                         {event.node.data.sdsd}
                       </span>
@@ -207,7 +184,8 @@ export default function Visualize() {
                         <span>dsds: </span>
                         {event.node.data.dsds}
                       </span> */}
-                    </foreignObject> }
+                      </foreignObject>
+                    )}
                   </Node>
                 }
                 direction="RIGHT"

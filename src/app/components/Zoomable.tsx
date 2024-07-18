@@ -29,7 +29,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
         newScale = Math.max(0.01, Math.min(100, newScale));
         const newPosX = -targetX * newScale + pointerX;
         const newPosY = -targetY * newScale + pointerY;
-        console.log("dim: ", left, top, e.deltaMode);
+        // console.log("dim: ", left, top, e.deltaMode);
         setScale(newScale);
         setPosition({ x: newPosX, y: newPosY });
         childDivRef.current.style.transform = `translate(${newPosX}px, ${newPosY}px) scale(${newScale})`;
@@ -51,7 +51,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
       const deltaX = e.clientX - prevPosition.x;
       const deltaY = e.clientY - prevPosition.y;
       setPrevPosition({ x: e.clientX, y: e.clientY });
-      console.log("hererererererere....", position);
+    //   console.log("hererererererere....", position);
       setPosition((prev) => ({
         x: prev.x + deltaX,
         y: prev.y + deltaY,
