@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Container, Section, Bar } from "@column-resizer/react";
 import { Canvas, Label, Node } from "reaflow";
@@ -9,7 +9,9 @@ import Zoomable from "../components/Zoomable";
 import debounce from "lodash/debounce";
 import Image from "next/image";
 import Forest from "@/app/assets/images/forest.jpeg";
-import { debouncedFunction, parsEditorData } from "./lib/parsingJson";
+import { parsEditorData } from "./lib/parsingJson";
+import useNodes from "./lib/GraphNodes";
+import CustomeNode from "../components/CustomeNode";
 
 enum CanvasPosition {
   CENTER = "center",
@@ -99,31 +101,24 @@ type NodeType = {
   height: number;
   width: number;
   data: any;
+  // text: string
 };
 
 export default function Visualize() {
   const [editorData, setEditorData] = useState({});
-  const [nodesData, setNodesData] = useState<NodeType[]>([]);
-  function handleOnchange(event: string | undefined) {
+  const [loading, setLoading] = useState(true);
+  const zusNode = useNodes((state) => state.nodes);
+  const setZusNode = useNodes((state) => state.setNode);
+  function handleOnchange(value: string | undefined) {
     try {
-      const json = JSON.parse(event || "");
-      // const { width, height } = debouncedFunction(json)!;
-      const { width, height } = parsEditorData(json);
-      console.log("entered((((((")
-      setNodesData((prev) => [
-        ...prev,
-        {
-          id: (prev.length + 1).toString(), // Ensure unique ID
-          height,
-          width,
-          data: json,
-        },
-      ]);
+      const json = JSON.parse(value || "");
+      setZusNode(json);
+      setLoading(false);
     } catch (err) {
       console.log("JSON parese error");
     }
   }
-  console.log("nodenodenodenode", nodesData);
+
   return (
     <div className="w-full h-[calc(100%_-_4rem)]">
       <Container style={{ height: "100%", background: "#80808080" }}>
@@ -150,44 +145,9 @@ export default function Visualize() {
                 defaultPosition={"" as CanvasPosition}
                 readonly={true}
                 zoomable={false}
-                nodes={nodesData}
+                nodes={zusNode}
                 // edges={edges}
-                node={
-                  <Node
-                    style={{ stroke: "#465872", fill: "#F5F8FA" }}
-                    label={<Label style={{ fill: "#535353" }} />}
-                  >
-                    {(event) => (
-                      <foreignObject height={event.height} width={event.width}>
-                        <span
-                          style={{
-                            padding: "10px 10px 10px 10px",
-                            width: "100%",
-                            display: "block",
-                            fontSize: 12,
-                          }}
-                        >
-                          <span>key: </span>
-                          {typeof event.node.data.key === "string"
-                            ? `"${event.node.data.key}"`
-                            : event.node.data.key}
-                        </span>
-                        {/* <span style={{ padding: "10px 10px 0px 10px", width: "100%", display: "block", fontSize: 12}}>
-                        <span>sdsd: </span>
-                        {event.node.data.sdsd}
-                      </span>
-                      <span style={{ padding: "0px 10px", width: "100%", display: "block", fontSize: 12}}>
-                        <span>erer: </span>
-                        "{event.node.data.erer}"
-                      </span>
-                      <span style={{ padding: "0px 10px 10px 10px", width: "100%", display: "block", fontSize: 12}}>
-                        <span>dsds: </span>
-                        {event.node.data.dsds}
-                      </span> */}
-                      </foreignObject>
-                    )}
-                  </Node>
-                }
+                node={(p) => <CustomeNode {...p}/>}
                 direction="RIGHT"
               />
             </Zoomable>
