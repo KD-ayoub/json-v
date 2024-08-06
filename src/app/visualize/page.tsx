@@ -108,6 +108,7 @@ export default function Visualize() {
   const [editorData, setEditorData] = useState({});
   const [loading, setLoading] = useState(true);
   const zusNode = useNodes((state) => state.nodes);
+  const zusEdge = useNodes((state) => state.edges);
   const setZusNode = useNodes((state) => state.setNode);
   function handleOnchange(value: string | undefined) {
     try {
@@ -146,7 +147,7 @@ export default function Visualize() {
                 readonly={true}
                 zoomable={false}
                 nodes={zusNode}
-                // edges={edges}
+                edges={zusEdge}
                 node={(p) => <CustomeNode {...p}/>}
                 direction="RIGHT"
               />

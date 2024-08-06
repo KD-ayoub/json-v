@@ -6,6 +6,7 @@ export type MyNodeData = {
   key: any;
   value: any;
   type: 'object' | 'array' | 'property' | 'string' | 'number' | 'boolean' | 'null' | undefined;
+  isParent: boolean,
 };
 
 export type MyNodeType = {
@@ -15,27 +16,31 @@ export type MyNodeType = {
   data: MyNodeData[];
 };
 
+export type MyEdgeType = {
+  id: string,
+  from: string,
+  to: string
+}
+
 type State = {
   nodes: MyNodeType[];
+  edges: MyEdgeType[];
 };
 
 type Action = {
   setNode: (json: any) => void;
 };
 
-const initialNode: MyNodeType[] = [{
-  id: "",
-  width: 0,
-  height: 0,
-  data: [],
-}];
+const initialNode: MyNodeType[] = [];
+const initialEdges: MyEdgeType[] = []
 
 const useNodes = create<State & Action>((set, get) => ({
-  nodes: initialNode,
+  nodes: [],
+  edges: [],
   setNode: (json: any) => {
-    const data = parsEditorData(json, initialNode);
+    const data = parsEditorData(json, initialNode, initialEdges);
     console.log("returned.//", initialNode);
-    set({ nodes: initialNode });
+    set({ nodes: initialNode, edges: initialEdges });
     // set(() => ({ nodes: node })) ;
   },
 }));

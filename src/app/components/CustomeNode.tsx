@@ -1,6 +1,7 @@
 import React from "react";
 import { Label, Node, NodeData, NodeProps } from "reaflow";
 import { MyNodeData } from "../visualize/lib/GraphNodes";
+import { LinkIcon } from "@heroicons/react/16/solid";
 export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
   return (
     <Node
@@ -22,9 +23,23 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                 ? "text-[#FD0179]"
                 : value.type === "boolean"
                 ? "text-[#FF0000]"
-                : "text-[#AFAFAF]"
+                : "text-[#AFAFAF]";
             const boolean =
               value.type === "boolean" && value.value ? "true" : "false";
+            if (value.isParent) {
+              return (
+                <span
+                  key={idx}
+                  className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
+                >
+                  <span className="ml-2 text-[#751DEA] max-w-[250px] overflow-hidden text-ellipsis">{value.key}</span>
+                  <span className="p-[10px]">(1)</span>
+                  <button className="w-10 h-full flex justify-center items-center bg-[#465772]">
+                    <LinkIcon className="w-5" color="#D3D3D3"/>
+                  </button>
+                </span>
+              );
+            }
             return (
               <span
                 key={idx}
