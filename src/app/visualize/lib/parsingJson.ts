@@ -9,7 +9,6 @@ function generateUniqueId() {
   return idCounter.toString();
 }
 
-
 export function extraxWidthAndHeight(str: string, isString: boolean) {
   const dummyElement = document.createElement("div");
   dummyElement.innerHTML = str;
@@ -115,6 +114,7 @@ function parentNode(
       },
     ],
     hasParent: true,
+    parentOf: (idCounter + 2).toString()
   });
 }
 
@@ -125,7 +125,7 @@ function parseObject(
   parentformated: MyNodeType,
   formated: MyNodeType,
   initialNode: MyNodeType[],
-  initialEdges: MyEdgeType[],
+  initialEdges: MyEdgeType[]
 ) {
   // console.log("ParseObject--)-)-)-)-)", children);
   children.forEach((child, idx) => {
@@ -156,30 +156,57 @@ function parseObject(
     }
   });
   // console.log("all done done", initialNode);
-  // addEdges(parentformated, formated, initialEdges, initialNode);
 }
 
-function addEdges(
-  parentformated: MyNodeType,
-  formated: MyNodeType,
-  initialEdges: MyEdgeType[],
-  initialNode: MyNodeType[]
-) {
-  console.log("addEdges", parentformated, formated, initialEdges, initialNode);
-  // if (parentformated.id) {
-  //   initialEdges.push({
-  //     id: `${parentformated.id}-${formated.id}`,
-  //     from: `${parentformated.id}`,
-  //     to: `${formated.id}`,
-  //   });
-  // }
+function addEdges(initialEdges: MyEdgeType[], initialNode: MyNodeType[]) {
+  const reversedNodes = [...initialNode].reverse();
+  console.log("reversed", reversedNodes);
+  // Iterate through the reversed array and add edges
+  let parent:string[] = [];
+  for (let i = 0; i < reversedNodes.length; i++) {
+    const currentNode = reversedNodes[i];
+    
+    if (currentNode.hasParent && currentNode.data[0].isParent) {
+      console.log(`printed, ${currentNode.id}`);
+      initialEdges.push({
+        id: `${currentNode.id}-${reversedNodes[i - 1].id}`,
+        from: `${currentNode.id}`,
+        to: `${reversedNodes[i - 1].id}`,
+      });
+      parent.push(currentNode.id);
+      // parent.push(reversedNodes[i - 1].id);
+    } 
+    else if (currentNode.hasParent) {
+      console.log("printedElse", currentNode.id);
+      parent.push(currentNode.id);
+      // initialEdges.push({
+      //   id: `${currentNode.id}-${currentNode.parentOf}`,
+      //   from: `${currentNode.id}`,
+      //   to: `${currentNode.parentOf}`,
+      // });
+    }
+    // if (!nextNode) {
+    //   initialEdges.push({
+    //     id: `${reversedNodes[0].id}-${
+    //       reversedNodes[reversedNodes.length - 1].id
+    //     }`,
+    //     from: `${reversedNodes[0].id}`,
+    //     to: `${reversedNodes[reversedNodes.length - 1].id}`,
+    //   });
+
+    //   break;
+    // }
+  }
+  console.log(
+    `${reversedNodes[0].id}-${reversedNodes[reversedNodes.length - 1].id}`,parent
+  );
 }
 
 function traverseTree(
   parsedTree: Node,
   initialNode: MyNodeType[],
   hasParent: boolean,
-  initialEdges: MyEdgeType[],
+  initialEdges: MyEdgeType[]
 ) {
   if (!parsedTree.children) {
     console.log("Error in traverseTree");
@@ -192,6 +219,7 @@ function traverseTree(
       height: 0,
       data: [],
       hasParent: hasParent,
+      parentOf: ""
     };
     let parentformated: MyNodeType = {
       id: "",
@@ -199,6 +227,7 @@ function traverseTree(
       height: 0,
       data: [],
       hasParent: false,
+      parentOf: ""
     };
     parseObject(
       parsedTree.children,
@@ -206,7 +235,7 @@ function traverseTree(
       parentformated,
       formated,
       initialNode,
-      initialEdges,
+      initialEdges
     );
     initialNode.push(formated);
     // initialNode.push(parentformated);
@@ -227,6 +256,7 @@ export function parsEditorData(
     console.log("treeeee", parsedTree);
 
     traverseTree(parsedTree, initialNode, false, initialEdges);
+    addEdges(initialEdges, initialNode);
     console.log("initial", initialNode);
     return [];
   } catch (error) {
