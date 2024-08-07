@@ -14,6 +14,7 @@ export type MyNodeType = {
   width: number;
   height: number;
   data: MyNodeData[];
+  hasParent: boolean,
 };
 
 export type MyEdgeType = {
