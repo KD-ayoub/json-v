@@ -150,6 +150,8 @@ export default function Visualize() {
                 edges={zusEdge}
                 node={(p) => <CustomeNode {...p}/>}
                 direction="RIGHT"
+                maxHeight={5000}
+                maxWidth={5000}
               />
             </Zoomable>
           </div>

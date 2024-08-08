@@ -7,6 +7,7 @@ export type MyNodeData = {
   value: any;
   type: 'object' | 'array' | 'property' | 'string' | 'number' | 'boolean' | 'null' | undefined;
   isParent: boolean,
+  length: number
 };
 
 export type MyNodeType = {
@@ -15,7 +16,7 @@ export type MyNodeType = {
   height: number;
   data: MyNodeData[];
   hasParent: boolean,
-  parentOf: string
+  isChildOf: string
 };
 
 export type MyEdgeType = {

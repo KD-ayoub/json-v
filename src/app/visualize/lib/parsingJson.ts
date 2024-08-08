@@ -3,10 +3,31 @@ import { MyEdgeType, MyNodeData, MyNodeType } from "./GraphNodes";
 import { sum } from "lodash";
 
 let idCounter = 0;
-
+let ids: string[] = [];
 function generateUniqueId() {
   idCounter += 1;
   return idCounter.toString();
+}
+
+function extractLength(child: Node) {
+  let count = 0;
+  let found = false;
+  if (child.children) {
+    child.children?.forEach((child, idx) => {
+      if (child.children) {
+        if (child.children[1].type === "object") {
+          count += 1;
+        } else if (simpleObjectValuesType(child.children[1].type)) {
+          found = true;
+        }
+      }
+    });
+    if (found) {
+      count += 1;
+    }
+  }
+  console.log("lengthlzntght", child);
+  return count;
 }
 
 export function extraxWidthAndHeight(str: string, isString: boolean) {
@@ -40,12 +61,13 @@ function parseSimpleObject(children: Node[]) {
     value: value,
     type: type,
     isParent: false,
+    length: 0,
   };
   //   const { width, height } = extraxWidthAndHeight(`${key}: ${value}`, typeof value === "string");
   return data;
 }
 
-function filterObjectChildren(children: Node[]) {
+function filterSimpleObjectChildren(children: Node[]) {
   return children.filter((child, idx) => {
     if (child.children) {
       return child.children[1].type !== "object";
@@ -53,10 +75,18 @@ function filterObjectChildren(children: Node[]) {
   });
 }
 
+function filterObjectChildren(children: Node[]) {
+  return children.filter((child, idx) => {
+    if (child.children) {
+      return child.children[1].type === "object";
+    }
+  });
+}
+
 function getLongestElement(children: Node[]) {
   let widths: number[] = [];
   let heights: number[] = [];
-  let filteredChildren = filterObjectChildren(children);
+  let filteredChildren = filterSimpleObjectChildren(children);
   filteredChildren.forEach((child) => {
     const key = child.children?.at(0)?.value;
     const value = child.children?.at(1)?.value;
@@ -79,7 +109,8 @@ function getLongestElement(children: Node[]) {
 function parentNode(
   child: Node,
   formated: MyNodeType,
-  initialNode: MyNodeType[]
+  initialNode: MyNodeType[],
+  initialEdges: MyEdgeType[]
 ) {
   console.log("childe in parentNode", child);
   const { width, height } = extraxWidthAndHeight(`${child.value}(1)`, true);
@@ -100,7 +131,7 @@ function parentNode(
   //     to: `${formated.id}`,
   //   });
   // }
-  initialNode.push({
+  const node = {
     id: generateUniqueId(),
     width: width + 45 > 300 ? 320 : width + 45,
     height: height,
@@ -111,11 +142,32 @@ function parentNode(
         key: child.value,
         value: "",
         isParent: true,
+        length: 0,
       },
     ],
     hasParent: true,
-    parentOf: (idCounter + 2).toString()
+    isChildOf: "",
+  };
+  ids.push(node.id);
+  initialNode.push(node);
+  initialEdges.push({
+    id: `${formated.id}-${node.id}`,
+    from: `${formated.id}`,
+    to: `${node.id}`,
   });
+}
+
+function hasNetsedObject(children: Node[]) {
+  console.log("extrat", children);
+  children.forEach((child) => {
+    if (child.children) {
+      if (child.children[1].type === "object") {
+        console.log("got object");
+        return true;
+      }
+    }
+  });
+  return false;
 }
 
 /// case Object
@@ -125,88 +177,95 @@ function parseObject(
   parentformated: MyNodeType,
   formated: MyNodeType,
   initialNode: MyNodeType[],
-  initialEdges: MyEdgeType[]
+  initialEdges: MyEdgeType[],
+  isChildOf: string,
+  prevId: string
 ) {
-  // console.log("ParseObject--)-)-)-)-)", children);
-  children.forEach((child, idx) => {
-    if (
-      child.children &&
-      simpleObjectValuesType(child.children[0].type) &&
-      simpleObjectValuesType(child.children[1].type)
-    ) {
-      /// does not have a child
-      formated.data.push(parseSimpleObject(child.children));
-      const { width, height, id } = getLongestElement(children);
-      formated.width = width;
-      formated.height = height;
-      formated.id = id;
-      console.log("entered........", idx, formated.id);
-    }
-    if (
-      child.children &&
-      child.children[1].children &&
-      !simpleObjectValuesType(child.children[1].type)
-    ) {
-      //// has child
-      // console.log("i wan t here  ??;;;;::::///", formated.id);
-      parentNode(child.children[0], formated, initialNode);
-      // initialNode.push(parentformated);
-      traverseTree(child.children[1], initialNode, true, initialEdges);
-      // parseObject(child.children[1].children, type, parentformated, formated, initialNode, initialEdges);
-    }
-  });
-  // console.log("all done done", initialNode);
+  const filteredSimpleChildren = filterSimpleObjectChildren(children);
+  const filteredChildren = filterObjectChildren(children);
+  console.log("all done inininin", filteredChildren, filteredSimpleChildren);
+  if (filteredSimpleChildren.length > 0) {
+    filteredSimpleChildren.forEach((child, idx) => {
+      if (child.children) {
+        const node = parseSimpleObject(child.children);
+
+        formated.data.push(node);
+      }
+    });
+    const { width, height, id } = getLongestElement(children);
+    formated.width = width;
+    formated.height = height;
+    formated.id = id;
+    formated.isChildOf = isChildOf;
+    ids.push(isChildOf);
+    initialNode.push(formated);
+  }
+  console.log("all done done", filteredSimpleChildren, parentformated, ids);
+  console.log("all done inininin", initialNode);
+  if (filteredChildren.length > 0) {
+    filteredChildren.forEach((child, idx) => {
+      if (child.children) {
+        // const id = generateUniqueId();
+        // if (child.children[1].children) {
+        //   console.log("enteredIF", prevId, formated.id);
+        //   prevId = hasNetsedObject(child.children[1].children)?  id : formated.id;
+        // }
+        console.log("prevvvv", child.children);
+        const length = extractLength(child.children[1]);
+        const { width, height } = extraxWidthAndHeight(
+          `${child.children[0].value}(${length})`,
+          true
+        );
+        const node = {
+          id: generateUniqueId(),
+          width: width + 45 > 300 ? 320 : width + 45,
+          height: height,
+          data: [
+            {
+              id: generateUniqueId(),
+              type: child.children[0].type,
+              key: child.children[0].value,
+              value: "",
+              isParent: true,
+              length: length || -1,
+            },
+          ],
+          hasParent: true,
+          isChildOf: isChildOf === "root" ? formated.id : isChildOf,
+        };
+        console.log("connected", formated.id);
+        ids.push(formated.id);
+        initialNode.push(node);
+        traverseTree(
+          child.children[1],
+          initialNode,
+          true,
+          node.id,
+          initialEdges,
+          prevId
+        );
+      }
+    });
+  }
 }
 
 function addEdges(initialEdges: MyEdgeType[], initialNode: MyNodeType[]) {
-  const reversedNodes = [...initialNode].reverse();
-  console.log("reversed", reversedNodes);
-  // Iterate through the reversed array and add edges
-  let parent:string[] = [];
-  for (let i = 0; i < reversedNodes.length; i++) {
-    const currentNode = reversedNodes[i];
-    
-    if (currentNode.hasParent && currentNode.data[0].isParent) {
-      console.log(`printed, ${currentNode.id}`);
-      initialEdges.push({
-        id: `${currentNode.id}-${reversedNodes[i - 1].id}`,
-        from: `${currentNode.id}`,
-        to: `${reversedNodes[i - 1].id}`,
-      });
-      parent.push(currentNode.id);
-      // parent.push(reversedNodes[i - 1].id);
-    } 
-    else if (currentNode.hasParent) {
-      console.log("printedElse", currentNode.id);
-      parent.push(currentNode.id);
-      // initialEdges.push({
-      //   id: `${currentNode.id}-${currentNode.parentOf}`,
-      //   from: `${currentNode.id}`,
-      //   to: `${currentNode.parentOf}`,
-      // });
-    }
-    // if (!nextNode) {
-    //   initialEdges.push({
-    //     id: `${reversedNodes[0].id}-${
-    //       reversedNodes[reversedNodes.length - 1].id
-    //     }`,
-    //     from: `${reversedNodes[0].id}`,
-    //     to: `${reversedNodes[reversedNodes.length - 1].id}`,
-    //   });
-
-    //   break;
-    // }
+  for (let i = 1; i < initialNode.length; i++) {
+    initialEdges.push({
+      id: `${initialNode[i].isChildOf}-${initialNode[1].id}`,
+      from: `${initialNode[i].isChildOf}`,
+      to: `${initialNode[i].id}`,
+    });
   }
-  console.log(
-    `${reversedNodes[0].id}-${reversedNodes[reversedNodes.length - 1].id}`,parent
-  );
 }
 
 function traverseTree(
   parsedTree: Node,
   initialNode: MyNodeType[],
   hasParent: boolean,
-  initialEdges: MyEdgeType[]
+  isChildOf: string,
+  initialEdges: MyEdgeType[],
+  prevId: string
 ) {
   if (!parsedTree.children) {
     console.log("Error in traverseTree");
@@ -219,7 +278,7 @@ function traverseTree(
       height: 0,
       data: [],
       hasParent: hasParent,
-      parentOf: ""
+      isChildOf: "",
     };
     let parentformated: MyNodeType = {
       id: "",
@@ -227,7 +286,7 @@ function traverseTree(
       height: 0,
       data: [],
       hasParent: false,
-      parentOf: ""
+      isChildOf: "",
     };
     parseObject(
       parsedTree.children,
@@ -235,9 +294,10 @@ function traverseTree(
       parentformated,
       formated,
       initialNode,
-      initialEdges
+      initialEdges,
+      isChildOf,
+      prevId
     );
-    initialNode.push(formated);
     // initialNode.push(parentformated);
     console.log("initialNode after", initialNode, initialEdges);
   } else {
@@ -255,7 +315,7 @@ export function parsEditorData(
     if (!parsedTree) throw new Error("Error in parsedTree");
     console.log("treeeee", parsedTree);
 
-    traverseTree(parsedTree, initialNode, false, initialEdges);
+    traverseTree(parsedTree, initialNode, false, "root", initialEdges, "");
     addEdges(initialEdges, initialNode);
     console.log("initial", initialNode);
     return [];

@@ -3,6 +3,11 @@ import { Label, Node, NodeData, NodeProps } from "reaflow";
 import { MyNodeData } from "../visualize/lib/GraphNodes";
 import { LinkIcon } from "@heroicons/react/16/solid";
 export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
+
+  function handleClick(id: string) {
+    console.log("clicked", id);
+  }
+
   return (
     <Node
       {...nodeProps}
@@ -33,8 +38,8 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                   className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
                 >
                   <span className="ml-2 text-[#751DEA] max-w-[250px] overflow-hidden text-ellipsis">{value.key}</span>
-                  <span className="p-[10px]">(1)</span>
-                  <button className="w-10 h-full flex justify-center items-center bg-[#465772]">
+                  <span className="p-[10px]">({value.length})</span>
+                  <button className="w-10 h-full flex justify-center items-center bg-[#465772]" onClick={() => handleClick(event.node.id)}>
                     <LinkIcon className="w-5" color="#D3D3D3"/>
                   </button>
                 </span>
