@@ -109,6 +109,8 @@ export default function Visualize() {
   const [loading, setLoading] = useState(true);
   const zusNode = useNodes((state) => state.nodes);
   const zusEdge = useNodes((state) => state.edges);
+  const collapsedNodes = useNodes((state) => state.collapsedNodes);
+  const collapsedEdges = useNodes((state) => state.collapsedEdges);
   const setZusNode = useNodes((state) => state.setNode);
   function handleOnchange(value: string | undefined) {
     try {
@@ -146,8 +148,8 @@ export default function Visualize() {
                 defaultPosition={"" as CanvasPosition}
                 readonly={true}
                 zoomable={false}
-                nodes={zusNode}
-                edges={zusEdge}
+                nodes={collapsedNodes.length > 0 ? collapsedNodes : zusNode}
+                edges={collapsedEdges.length > 0 ? collapsedEdges : (collapsedEdges.length === 0 && collapsedNodes.length >0 ) ? collapsedEdges : zusEdge}
                 node={(p) => <CustomeNode {...p}/>}
                 direction="RIGHT"
                 maxHeight={5000}
