@@ -92,7 +92,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                   key={idx}
                   className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
                 >
-                  <span className="ml-2 text-[#751DEA] max-w-[250px] overflow-hidden text-ellipsis">
+                  <span className="ml-2 text-[#751DEA] max-w-[250px] whitespace-nowrap overflow-hidden text-ellipsis">
                     {value.key}
                   </span>
                   <span className="p-[10px]">({value.length})</span>
@@ -114,7 +114,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
               return (
                 <span
                 key={idx}
-                className={`w-full block text-[12px] ${textColor} font-[500] p-[10px]`}
+                className={`w-full block text-[12px] ${textColor}  font-[500] p-[10px]`}
               >
                 {value.type === "string"
                   ? value.value
@@ -129,7 +129,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
             return (
               <span
                 key={idx}
-                className={`w-full block text-[12px] ${textColor} font-[500] ${padding}`}
+                className={`w-full block text-[12px] max-w-[650px] whitespace-nowrap overflow-hidden text-ellipsis ${textColor} font-[500] ${padding}`}
               >
                 <span className="text-[#751DEA]">{value.key}: </span>
                 {value.type === "string"

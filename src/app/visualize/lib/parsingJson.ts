@@ -107,7 +107,7 @@ function getLongestElement(children: Node[]) {
   const calculated =
     filteredChildren.length > 1 ? 56 + 18 * (filteredChildren.length - 2) : 38; // 28 + 18 + 28 /// 28 + 18 + 18 + 28
   return {
-    width: Math.max(...widths),
+    width: Math.max(...widths) > 650 ? 650 : Math.max(...widths),
     height: calculated,
     id: generateUniqueId(),
   };
