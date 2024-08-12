@@ -3,6 +3,7 @@ import { Label, Node, NodeData, NodeProps } from "reaflow";
 import useNodes, { MyNodeData, MyNodeType } from "../visualize/lib/GraphNodes";
 import { BoltSlashIcon, LinkIcon } from "@heroicons/react/16/solid";
 import { produce } from "immer";
+import { uniq } from "lodash";
 
 export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
   const [collapse, setCollapse] = useState(false);
@@ -13,16 +14,31 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
   const setCollapsedNodes = useNodes((state) => state.setCollapsedNodes);
   const setCollapsedEdges = useNodes((state) => state.setCollapsedEdges);
   const setNodes = useNodes((state) => state.setNodes);
-  function extractEdges(extractedNodes: MyNodeType[]) {
-    let copyEdges: typeof edges;
-    if (collapsedNodes.length > 0 && verifyCollapsed(collapsedNodes)) {
-      console.log("found");
-      copyEdges = [...collapsedEdges];
-    } else {
-      console.log("found1");
-      copyEdges = [...edges];
+
+  function filterCollapsedChildren(nodes: MyNodeType[], id: string) {
+    let collect: typeof nodes = [];
+
+    function findChildren(parentId: string) {
+      const children = nodes.filter((node) => node.isChildOf === parentId);
+      console.log("children", children, parentId);
+      collect.push(...children);
+      children.forEach((child) => {
+        findChildren(child.id);
+      });
     }
-    extractedNodes.forEach((node) => {
+    nodes.forEach((child) => {
+      if (child.collapse) {
+        findChildren(child.id);
+      }
+    })
+
+    console.log("collected", collect);
+    const updatedNodes = nodes.filter(
+      (node) => !collect.some((col) => col.id === node.id)
+    );
+    const copyEdges: typeof edges = [...edges];
+    collect = uniq(collect);
+    collect.forEach((node) => {
       copyEdges.splice(
         copyEdges.findIndex(
           (edge) => edge.id === `${node.isChildOf}-${node.id}`
@@ -30,69 +46,21 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
         1
       );
     });
-    return copyEdges;
-  }
+    setCollapsedNodes(updatedNodes, true);
+    setCollapsedEdges(copyEdges, true);
 
-  function verifyCollapsed(collapsedNodes: MyNodeType[]) {
-    for (let i = 0; i < collapsedNodes.length; i++) {
-      if (collapsedNodes[i].collapse) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function extractNodes(id: string) {
-    let copyNodes: typeof nodes;
-    const bo = verifyCollapsed(collapsedNodes);
-    console.log("bo", bo);
-    if (collapsedNodes.length > 0 && verifyCollapsed(collapsedNodes)) {
-      console.log("found");
-      copyNodes = [...collapsedNodes];
-    } else {
-      console.log("found1");
-      copyNodes = [...nodes];
-    }
-    const collect: typeof nodes = [];
-    console.log("collapsed", collapsedNodes, collapsedEdges);
-    function findChildren(parentId: string) {
-      const children = copyNodes.filter((node) => node.isChildOf === parentId);
-      collect.push(...children);
-
-      children.forEach((child) => {
-        findChildren(child.id);
-      });
-    }
-
-    findChildren(id);
-    const updatedNodes = copyNodes.filter(
-      (node) => !collect.some((col) => col.id === node.id)
-    );
-    return { collect, updatedNodes };
   }
   function handleClick(e: MouseEvent, id: string) {
-    const { collect, updatedNodes } = extractNodes(id);
-    console.log("updatedErrrorr", collect);
-    const extractedEdges = extractEdges(collect);
-    console.log("updatedErrrorr", collect);
     const index = nodes.findIndex((node) => node.id === id);
-    const newNode = produce(nodes, (draft) => {
-      draft[index].collapse = true;
-    });
-    const newNode1 = produce(updatedNodes, (draft) => {
-      if (index > 0 && index < draft.length) {
-        draft[index].collapse = true;
+    const newNodes = produce(nodes, (draft) => {
+      if (index >= 0 && index < draft.length) {
+        draft[index].collapse = !collapse;
       }
     });
-    setNodes(newNode);
-    setCollapse(true);
-    setCollapsedNodes(newNode1, true);
-    setCollapsedEdges(extractedEdges, true);
-    if (collapse) {
-      setCollapse(false);
-      setCollapsedNodes(nodes, false);
-      setCollapsedEdges(edges, false);
-    }
+    setNodes(newNodes);
+    setCollapse(!collapse);
+    console.log("newNodex", newNodes);
+    filterCollapsedChildren(newNodes, id);
   }
 
   return (
@@ -132,13 +100,31 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                     className="w-10 h-full flex justify-center items-center bg-[#465772]"
                     onClick={(e) => handleClick(e, event.node.id)}
                   >
-                    {!collapse && <LinkIcon className="w-5" color="#D3D3D3" />}
-                    {collapse && (
+                    {!(event.node as MyNodeType).collapse && (
+                      <LinkIcon className="w-5" color="#D3D3D3" />
+                    )}
+                    {(event.node as MyNodeType).collapse && (
                       <BoltSlashIcon className="w-5" color="#D3D3D3" />
                     )}
                   </button>
                 </span>
               );
+            }
+            if (value.isAlone) {
+              return (
+                <span
+                key={idx}
+                className={`w-full block text-[12px] ${textColor} font-[500] p-[10px]`}
+              >
+                {value.type === "string"
+                  ? value.value
+                  : value.type === "boolean"
+                  ? boolean
+                  : value.type === "null"
+                  ? "null"
+                  : value.value}
+              </span>
+              )
             }
             return (
               <span
