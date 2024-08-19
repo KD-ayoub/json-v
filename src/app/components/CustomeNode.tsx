@@ -20,7 +20,6 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
 
     function findChildren(parentId: string) {
       const children = nodes.filter((node) => node.isChildOf === parentId);
-      console.log("children", children, parentId);
       collect.push(...children);
       children.forEach((child) => {
         findChildren(child.id);
@@ -32,7 +31,6 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
       }
     })
 
-    console.log("collected", collect);
     const updatedNodes = nodes.filter(
       (node) => !collect.some((col) => col.id === node.id)
     );
@@ -59,7 +57,6 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
     });
     setNodes(newNodes);
     setCollapse(!collapse);
-    console.log("newNodex", newNodes);
     filterCollapsedChildren(newNodes, id);
   }
 
@@ -92,7 +89,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                   key={idx}
                   className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
                 >
-                  <span className="ml-2 text-[#751DEA] max-w-[250px] whitespace-nowrap overflow-hidden text-ellipsis">
+                  <span className={`ml-2 ${value.isArrayParent ? "text-[#FF6B00]" : "text-[#751DEA]"} max-w-[250px] whitespace-nowrap overflow-hidden text-ellipsis`}>
                     {value.key}
                   </span>
                   <span className="p-[10px]">({value.length})</span>
@@ -114,7 +111,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
               return (
                 <span
                 key={idx}
-                className={`w-full block text-[12px] ${textColor}  font-[500] p-[10px]`}
+                className={`w-full block text-center text-[12px] ${textColor}  font-[500] p-[10px]`}
               >
                 {value.type === "string"
                   ? value.value

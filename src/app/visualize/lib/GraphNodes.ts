@@ -17,7 +17,8 @@ export type MyNodeData = {
     | undefined;
   isParent: boolean;
   length: number;
-  isAlone: boolean
+  isAlone: boolean;
+  isArrayParent: boolean
 };
 
 export type MyNodeType = NodeData<any> & {

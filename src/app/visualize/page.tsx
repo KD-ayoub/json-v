@@ -125,7 +125,7 @@ export default function Visualize() {
   return (
     <div className="w-full h-[calc(100%_-_4rem)]">
       <Container style={{ height: "100%", background: "#80808080" }}>
-        <Section minSize={300} maxSize={1000} defaultSize={500}>
+        <Section minSize={300} maxSize={600} defaultSize={400}>
           <Editor
             height={"100%"}
             loading=""

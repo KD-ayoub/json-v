@@ -9,13 +9,13 @@ function generateUniqueId() {
   return idCounter.toString();
 }
 
-function extractLength(child: Node) {
+function extractObjectLength(child: Node) {
   let count = 0;
   let found = false;
   if (child.children) {
     child.children?.forEach((child, idx) => {
       if (child.children) {
-        if (child.children[1].type === "object") {
+        if (child.children[1].type === "object" || child.children[1].type === "array") {
           count += 1;
         } else if (simpleObjectValuesType(child.children[1].type)) {
           found = true;
@@ -25,6 +25,23 @@ function extractLength(child: Node) {
     if (found) {
       count += 1;
     }
+  }
+  return count;
+}
+
+function extractArrayLength(child: Node) {
+  let count = 0;
+  if (child.children) {
+    return child.children.length;
+    // child.children.forEach((child, idx) => {
+    //   if (child.children) {
+    //     if (child.children[1].type === "array") {
+    //       count += 1;
+    //     } else if (simpleObjectValuesType(child.children[1].type)) {
+    //       found = true;
+    //     }
+    //   }
+    // });
   }
   return count;
 }
@@ -69,7 +86,7 @@ function parseSimpleObject(children: Node[]) {
 function filterSimpleObjectChildren(children: Node[]) {
   return children.filter((child, idx) => {
     if (child.children) {
-      return child.children[1].type !== "object";
+      return child.children[1].type !== "object" && child.children[1].type !== "array";
     }
   });
 }
@@ -124,11 +141,11 @@ function parseObject(
 ) {
   const filteredSimpleChildren = filterSimpleObjectChildren(children);
   const filteredChildren = filterObjectChildren(children);
-  console.log(filteredSimpleChildren, filteredChildren);
+  const filteredArrayChildren = filterArrayChildren(children);
+  console.log("before§§§§§§", filteredSimpleChildren, filteredChildren, filteredArrayChildren);
   if (filteredSimpleChildren.length === 0 && !passedRoot) {
     const rootNode = parseTree(JSON.stringify({ Object: "Root" }, null, 2));
     if (rootNode?.children) {
-      console.log("childrenenenrne", rootNode.children);
       const node = parseSimpleObject(rootNode.children[0].children!);
       formated.data.push(node);
       const { width, height, id } = getLongestElement(rootNode.children);
@@ -137,18 +154,17 @@ function parseObject(
       formated.id = id;
       formated.isChildOf = isChildOf;
       ids.push(isChildOf);
-      console.log("formated", formated);
       initialNode.push(formated);
     }
   }
   if (filteredSimpleChildren.length > 0) {
-    filteredSimpleChildren.forEach((child, idx) => {
-      if (child.children) {
-        const node = parseSimpleObject(child.children);
-
+    console.log("debug her", filteredSimpleChildren)
+    for (let i = 0; i < filteredSimpleChildren.length; i++) {
+      if (filteredSimpleChildren[i].children) {
+        const node = parseSimpleObject(filteredSimpleChildren[i].children!);
         formated.data.push(node);
       }
-    });
+    }
     const { width, height, id } = getLongestElement(children);
     formated.width = width;
     formated.height = height;
@@ -160,7 +176,7 @@ function parseObject(
   if (filteredChildren.length > 0) {
     filteredChildren.forEach((child, idx) => {
       if (child.children) {
-        const length = extractLength(child.children[1]);
+        const length = extractObjectLength(child.children[1]);
         const { width, height } = extraxWidthAndHeight(
           `${child.children[0].value}(${length})`,
           true
@@ -178,6 +194,7 @@ function parseObject(
               isParent: true,
               length: length || -1,
               isAlone: false,
+              isArrayParent: false
             },
           ],
           hasParent: true,
@@ -197,16 +214,92 @@ function parseObject(
       }
     });
   }
+  if (filteredArrayChildren.length > 0) {
+    filteredArrayChildren.forEach((child) => {
+      if (child.children) {
+        const length = extractArrayLength(child.children[1]);
+        const { width, height } = extraxWidthAndHeight(
+          `${child.children[0].value}(${length})`,
+          true
+        );
+        const node = {
+          id: generateUniqueId(),
+          width: width + 45 > 300 ? 320 : width + 45,
+          height: height,
+          data: [
+            {
+              id: generateUniqueId(),
+              type: child.children[0].type,
+              key: child.children[0].value,
+              value: "",
+              isParent: true,
+              length: length || -1,
+              isAlone: false,
+              isArrayParent: true
+            },
+          ],
+          hasParent: true,
+          isChildOf: isChildOf === "root" ? formated.id : isChildOf,
+          collapse: false,
+        };
+        ids.push(formated.id);
+        initialNode.push(node);
+        console.log("after friends", child.children[1])
+        traverseTree(
+          child.children[1],
+          initialNode,
+          true,
+          node.id,
+          initialEdges,
+          true
+        );
+      }
+    })
+  }
 }
 
 function addEdges(initialEdges: MyEdgeType[], initialNode: MyNodeType[]) {
   for (let i = 1; i < initialNode.length; i++) {
-    initialEdges.push({
-      id: `${initialNode[i].isChildOf}-${initialNode[i].id}`,
-      from: `${initialNode[i].isChildOf}`,
-      to: `${initialNode[i].id}`,
-    });
+    if (initialNode[i].isChildOf !== "root") {
+      initialEdges.push({
+        id: `${initialNode[i].isChildOf}-${initialNode[i].id}`,
+        from: `${initialNode[i].isChildOf}`,
+        to: `${initialNode[i].id}`,
+      });
+    }
   }
+}
+
+function creatSimpleNode(child: Node, initialNode: MyNodeType[], isChildOf: string) {
+  let formated: MyNodeType = {
+    id: "",
+    width: 0,
+    height: 0,
+    data: [],
+    hasParent: false,
+    isChildOf: "",
+    collapse: undefined,
+  };
+  formated.data.push({
+    id: generateUniqueId(),
+    type: child.type,
+    key: "",
+    value: child.value,
+    isParent: false,
+    length: 0,
+    isAlone: true,
+  });
+  const { width, height } = extraxWidthAndHeight(
+    `${child.value}`,
+    typeof child.type === "string"
+  );
+  formated.id = generateUniqueId();
+  formated.width = width;
+  formated.height = height;
+  formated.hasParent = false;
+  formated.isChildOf = isChildOf;
+  formated.collapse = false;
+  initialNode.push(formated);
 }
 
 function traverseTree(
@@ -241,7 +334,15 @@ function traverseTree(
     );
   } else if (parsedTree.type === "array") {
     /// logic for array
-    console.log("is Array", parsedTree.children, initialNode);
+    console.log("logic here", parsedTree.children);
+    parsedTree.children.forEach((child) => {
+      if (simpleObjectValuesType(child.type)) {
+        creatSimpleNode(child, initialNode, isChildOf);
+      } else {
+        console.log("entered her after", child.children);
+        traverseTree(child, initialNode, hasParent, isChildOf, initialEdges, passedRoot);
+      }
+    });
   }
 }
 
@@ -260,8 +361,7 @@ export function parsEditorData(
     if (!parsedTree) throw new Error("Error in parsedTree");
     console.log("parsedTree", parsedTree);
     traverseTree(parsedTree, initialNode, false, "root", initialEdges, false);
-    addEdges(initialEdges, initialNode);
-
+      addEdges(initialEdges, initialNode);
     console.log("initn", initialNode);
     return [];
   } catch (error) {

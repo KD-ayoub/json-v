@@ -25,7 +25,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
         const targetX = (pointerX - position.x) / scale;
         const targetY = (pointerY - position.y) / scale;
         let newScale =
-          scale + -1 * Math.max(-1, Math.min(1, e.deltaY)) * 0.1 * scale;
+          scale + -1 * Math.max(-1, Math.min(1, e.deltaY)) * 0.05 * scale;
         newScale = Math.max(0.01, Math.min(100, newScale));
         const newPosX = -targetX * newScale + pointerX;
         const newPosY = -targetY * newScale + pointerY;
@@ -68,7 +68,18 @@ export default function Zoomable({ children }: PropsWithChildren) {
   //     backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px;",
   //     backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px;"
   // }}
+  useEffect(() => {
+    const preventWindowScroll = (e: WheelEvent) => {
+      e.preventDefault();
+    };
 
+    window.addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("wheel", (e) => e.preventDefault());
+    };
+  }, []);
   return (
     <div
       ref={divRef}
