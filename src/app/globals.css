@@ -3,3 +3,7 @@
 @tailwind utilities;
 
 
+.hover-style:hover {
+    stroke: red;
+}
+

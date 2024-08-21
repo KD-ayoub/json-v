@@ -21,106 +21,44 @@ enum CanvasPosition {
   BOTTOM = "bottom",
 }
 
-const nodes = [
-  {
-    id: "1",
-    height: 200,
-    width: 200,
-    data: {
-      _id: "SFSDFS",
-      value: [1, 2],
-    },
-  },
-  {
-    id: "2",
-    height: 200,
-    width: 200,
-    data: {
-      _id: "FGBDFDFG",
-    },
-  },
-  {
-    id: "3",
-    height: 200,
-    width: 200,
-    data: {
-      _id: "FGBDFDFG",
-    },
-  },
-  {
-    id: "4",
-    height: 200,
-    width: 200,
-    data: {
-      _id: "FGBDFDFG",
-    },
-  },
-  {
-    id: "5",
-    height: 200,
-    width: 200,
-    data: {
-      _id: "FGBDFDFG",
-    },
-  },
-  {
-    id: "6",
-    height: 200,
-    width: 200,
-    data: {
-      _id: "FGBDFDFG",
-    },
-  },
-];
-
-// const edges = [
-//   {
-//     id: "1-2",
-//     from: "1",
-//     to: "2",
-//   },
-//   {
-//     id: "1-3",
-//     from: "1",
-//     to: "3",
-//   },
-//   {
-//     id: "1-4",
-//     from: "1",
-//     to: "4",
-//   },
-//   {
-//     id: "5-6",
-//     from: "5",
-//     to: "6",
-//   },
-// ];
-
-type NodeType = {
-  id: string;
-  height: number;
-  width: number;
-  data: any;
-  // text: string
-};
-
 export default function Visualize() {
   const [editorData, setEditorData] = useState({});
   const [loading, setLoading] = useState(true);
   const zusNode = useNodes((state) => state.nodes);
   const zusEdge = useNodes((state) => state.edges);
+  const setEdges = useNodes((state) => state.setEdges);
+  const setNodes = useNodes((state) => state.setNodes);
   const collapsedNodes = useNodes((state) => state.collapsedNodes);
   const collapsedEdges = useNodes((state) => state.collapsedEdges);
   const setZusNode = useNodes((state) => state.setNode);
-  function handleOnchange(value: string | undefined) {
-    try {
-      const json = JSON.parse(value || "");
-      setZusNode(json);
-      setLoading(false);
-    } catch (err) {
-      console.log("JSON parese error");
-    }
-  }
+
+
+
+  const debouncedHandleOnchange = useCallback(
+    debounce((value: string | undefined) => {
+      console.log("Entered debounce");
+      try {
+        setEdges([]); // Clear edges to avoid duplicates
+        setNodes([]); // Clear nodes to avoid duplicates
+        const json = JSON.parse(value || "");
+        setZusNode(json);
+        setLoading(false);
+      } catch (err) {
+        console.log("JSON parse error");
+        setEdges([]);
+        setNodes([]);
+        setLoading(true);
+      }
+    }, 800),
+    []
+  );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      debouncedHandleOnchange.cancel();
+    };
+  }, [debouncedHandleOnchange]);
 
   return (
     <div className="w-full h-[calc(100%_-_4rem)]">
@@ -136,14 +74,13 @@ export default function Visualize() {
               contextmenu: false,
             }}
             onValidate={(errors) => console.log("Error_Here", errors)}
-            onChange={handleOnchange}
+            onChange={debouncedHandleOnchange}
           />
         </Section>
         <Bar size={2} style={{ background: "#000", cursor: "col-resize" }} />
         <Section minSize={0} className="bg-[#F3F3F3]">
           <div className="w-full h-full relative">
             <Zoomable>
-              {/* <Image src={Forest} width={200} height={200} alt="Forest" draggable={false}/> */}
               <Canvas
                 defaultPosition={"" as CanvasPosition}
                 readonly={true}

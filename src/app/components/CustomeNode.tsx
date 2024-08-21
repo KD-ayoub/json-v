@@ -63,11 +63,12 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
   return (
     <Node
       {...nodeProps}
-      style={{ stroke: "#465872", fill: "#F5F8FA" }}
+      style={{ fill: "#F5F8FA"}}
       label={<Label style={{ fill: "#535353" }} />}
     >
       {(event) => (
-        <foreignObject height={event.height} width={event.width}>
+      
+      <foreignObject className="hover-style cursor-pointer " height={event.height} width={event.width} >
           {event.node.data.map((value: MyNodeData, idx: number) => {
             const padding =
               event.node.data.length > 1

@@ -18,7 +18,7 @@ export type MyNodeData = {
   isParent: boolean;
   length: number;
   isAlone: boolean;
-  isArrayParent: boolean
+  isArrayParent: boolean;
 };
 
 export type MyNodeType = NodeData<any> & {
@@ -52,9 +52,6 @@ type Action = {
   setCollapsedEdges: (collapsedEdges: MyEdgeType[], collapse: boolean) => void;
 };
 
-const initialNode: MyNodeType[] = [];
-const initialEdges: MyEdgeType[] = [];
-
 const useNodes = create<State & Action>((set, get) => ({
   nodes: [],
   edges: [],
@@ -79,9 +76,10 @@ const useNodes = create<State & Action>((set, get) => ({
     set({ nodes: nodes, edges: edges, collapsedEdges });
   },
   setNode: (json: any) => {
-    const data = parsEditorData(json, initialNode, initialEdges);
+    const initialNode: MyNodeType[] = [];
+    const initialEdges: MyEdgeType[] = [];
+    parsEditorData(json, initialNode, initialEdges);
     set({ nodes: initialNode, edges: initialEdges });
-    // set(() => ({ nodes: node })) ;
   },
 }));
 

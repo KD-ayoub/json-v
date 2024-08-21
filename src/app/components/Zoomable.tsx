@@ -69,13 +69,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
   //     backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px;"
   // }}
   useEffect(() => {
-    const preventWindowScroll = (e: WheelEvent) => {
-      e.preventDefault();
-    };
-
     window.addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
-
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("wheel", (e) => e.preventDefault());
     };
@@ -90,9 +84,9 @@ export default function Zoomable({ children }: PropsWithChildren) {
       onMouseUp={handlMouseUp}
       style={{
         backgroundImage:
-          "linear-gradient(#E4E4E4 1.5px, transparent 1.5px),linear-gradient(90deg, #E4E4E4 1.5px, transparent 1.5px),linear-gradient(#E4E4E4 1px, transparent 1px),linear-gradient(90deg, #E4E4E4 1px, transparent 1px);",
-        backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px;",
-        backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px;",
+          "linear-gradient(#E4E4E4 1.5px, transparent 1.5px),linear-gradient(90deg, #E4E4E4 1.5px, transparent 1.5px),linear-gradient(#E4E4E4 1px, transparent 1px),linear-gradient(90deg, #E4E4E4 1px, transparent 1px)",
+        backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px",
+        backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px",
       }}
     >
       <div

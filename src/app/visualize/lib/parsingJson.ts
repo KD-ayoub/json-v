@@ -142,7 +142,6 @@ function parseObject(
   const filteredSimpleChildren = filterSimpleObjectChildren(children);
   const filteredChildren = filterObjectChildren(children);
   const filteredArrayChildren = filterArrayChildren(children);
-  console.log("before§§§§§§", filteredSimpleChildren, filteredChildren, filteredArrayChildren);
   if (filteredSimpleChildren.length === 0 && !passedRoot) {
     const rootNode = parseTree(JSON.stringify({ Object: "Root" }, null, 2));
     if (rootNode?.children) {
@@ -158,7 +157,6 @@ function parseObject(
     }
   }
   if (filteredSimpleChildren.length > 0) {
-    console.log("debug her", filteredSimpleChildren)
     for (let i = 0; i < filteredSimpleChildren.length; i++) {
       if (filteredSimpleChildren[i].children) {
         const node = parseSimpleObject(filteredSimpleChildren[i].children!);
@@ -244,7 +242,6 @@ function parseObject(
         };
         ids.push(formated.id);
         initialNode.push(node);
-        console.log("after friends", child.children[1])
         traverseTree(
           child.children[1],
           initialNode,
@@ -334,12 +331,10 @@ function traverseTree(
     );
   } else if (parsedTree.type === "array") {
     /// logic for array
-    console.log("logic here", parsedTree.children);
     parsedTree.children.forEach((child) => {
       if (simpleObjectValuesType(child.type)) {
         creatSimpleNode(child, initialNode, isChildOf);
       } else {
-        console.log("entered her after", child.children);
         traverseTree(child, initialNode, hasParent, isChildOf, initialEdges, passedRoot);
       }
     });
@@ -352,20 +347,18 @@ export function parsEditorData(
   initialEdges: MyEdgeType[]
 ) {
   try {
-    console.log("beforeEntry", Array.isArray(obj));
+    console.log("obj", obj);
     if (Array.isArray(obj)) {
       obj = obj.flat(Infinity);
     }
-    console.log("afterIf", obj);
     const parsedTree = parseTree(JSON.stringify(obj, null, 2));
     if (!parsedTree) throw new Error("Error in parsedTree");
-    console.log("parsedTree", parsedTree);
     traverseTree(parsedTree, initialNode, false, "root", initialEdges, false);
-      addEdges(initialEdges, initialNode);
-    console.log("initn", initialNode);
-    return [];
+    addEdges(initialEdges, initialNode);
+    console.log("done", initialNode);
   } catch (error) {
     console.error("Error in parsedTree");
-    return [];
+    initialEdges = [];
+    initialNode = [];
   }
 }
