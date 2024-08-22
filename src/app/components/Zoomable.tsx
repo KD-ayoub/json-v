@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import useChoice from "../visualize/lib/useChoice";
 
 export default function Zoomable({ children }: PropsWithChildren) {
   const divRef = useRef<HTMLDivElement | null>(null);
@@ -15,7 +16,6 @@ export default function Zoomable({ children }: PropsWithChildren) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [prevPosition, setPrevPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-
   const handlWheel = useCallback(
     (e: WheelEvent) => {
       if (childDivRef.current && divRef.current) {
@@ -68,12 +68,14 @@ export default function Zoomable({ children }: PropsWithChildren) {
   //     backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px;",
   //     backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px;"
   // }}
-  useEffect(() => {
-    window.addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
-    return () => {
-      window.removeEventListener("wheel", (e) => e.preventDefault());
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("wheel", (e) => e.preventDefault(), {
+  //     passive: false,
+  //   });
+  //   return () => {
+  //     window.removeEventListener("wheel", (e) => e.preventDefault());
+  //   };
+  // }, []);
   return (
     <div
       ref={divRef}

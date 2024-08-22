@@ -62,13 +62,13 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
 
   return (
     <Node
-      {...nodeProps}
+      {...nodeProps} 
       style={{ fill: "#F5F8FA"}}
       label={<Label style={{ fill: "#535353" }} />}
     >
       {(event) => (
       
-      <foreignObject className="hover-style cursor-pointer " height={event.height} width={event.width} >
+      <foreignObject className="cursor-pointer" height={event.height} width={event.width} >
           {event.node.data.map((value: MyNodeData, idx: number) => {
             const padding =
               event.node.data.length > 1
@@ -90,7 +90,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                   key={idx}
                   className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
                 >
-                  <span className={`ml-2 ${value.isArrayParent ? "text-[#FF6B00]" : "text-[#751DEA]"} max-w-[250px] whitespace-nowrap overflow-hidden text-ellipsis`}>
+                  <span className={`ml-2 ${value.isArrayParent ? "text-[#FF6B00]" : "text-[#751DEA]"} max-w-[250px] text-center whitespace-nowrap overflow-hidden text-ellipsis`}>
                     {value.key}
                   </span>
                   <span className="p-[10px]">({value.length})</span>
@@ -112,7 +112,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
               return (
                 <span
                 key={idx}
-                className={`w-full block text-center text-[12px] ${textColor}  font-[500] p-[10px]`}
+                className={`w-full block text-[12px] ${textColor}  font-[500] p-[10px]`}
               >
                 {value.type === "string"
                   ? value.value

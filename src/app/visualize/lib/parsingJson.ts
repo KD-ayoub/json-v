@@ -1,6 +1,7 @@
 import { Node, parseTree } from "jsonc-parser";
 import { MyEdgeType, MyNodeData, MyNodeType } from "./GraphNodes";
 import { sum } from "lodash";
+import { produce } from "immer";
 
 let idCounter = 0;
 let ids: string[] = [];
@@ -142,20 +143,20 @@ function parseObject(
   const filteredSimpleChildren = filterSimpleObjectChildren(children);
   const filteredChildren = filterObjectChildren(children);
   const filteredArrayChildren = filterArrayChildren(children);
-  if (filteredSimpleChildren.length === 0 && !passedRoot) {
-    const rootNode = parseTree(JSON.stringify({ Object: "Root" }, null, 2));
-    if (rootNode?.children) {
-      const node = parseSimpleObject(rootNode.children[0].children!);
-      formated.data.push(node);
-      const { width, height, id } = getLongestElement(rootNode.children);
-      formated.width = width;
-      formated.height = height;
-      formated.id = id;
-      formated.isChildOf = isChildOf;
-      ids.push(isChildOf);
-      initialNode.push(formated);
-    }
-  }
+  // if (filteredSimpleChildren.length === 0 && !passedRoot) {
+  //   const rootNode = parseTree(JSON.stringify({ Object: "Root" }, null, 2));
+  //   if (rootNode?.children) {
+  //     const node = parseSimpleObject(rootNode.children[0].children!);
+  //     formated.data.push(node);
+  //     const { width, height, id } = getLongestElement(rootNode.children);
+  //     formated.width = width;
+  //     formated.height = height;
+  //     formated.id = id;
+  //     formated.isChildOf = isChildOf;
+  //     ids.push(isChildOf);
+  //     initialNode.push(formated);
+  //   }
+  // }
   if (filteredSimpleChildren.length > 0) {
     for (let i = 0; i < filteredSimpleChildren.length; i++) {
       if (filteredSimpleChildren[i].children) {
@@ -213,6 +214,7 @@ function parseObject(
     });
   }
   if (filteredArrayChildren.length > 0) {
+    console.log("isChildOf", isChildOf, formated.id, filteredArrayChildren, initialNode.length);
     filteredArrayChildren.forEach((child) => {
       if (child.children) {
         const length = extractArrayLength(child.children[1]);
@@ -237,11 +239,15 @@ function parseObject(
             },
           ],
           hasParent: true,
-          isChildOf: isChildOf === "root" ? formated.id : isChildOf,
+          isChildOf: isChildOf === "root" ? formated.id : isChildOf ,
           collapse: false,
         };
+        console.log("node.id", node.id, formated.id, isChildOf);
+        
         ids.push(formated.id);
-        initialNode.push(node);
+        initialNode.push(produce(node, (draft) => {
+          draft.isChildOf = formated.id;
+        }));
         traverseTree(
           child.children[1],
           initialNode,
@@ -321,6 +327,7 @@ function traverseTree(
     return;
   }
   if (parsedTree.type === "object") {
+    console.log("case object", parsedTree.children);
     parseObject(
       parsedTree.children,
       formated,
@@ -335,6 +342,7 @@ function traverseTree(
       if (simpleObjectValuesType(child.type)) {
         creatSimpleNode(child, initialNode, isChildOf);
       } else {
+        console.log("case arrray", isChildOf);
         traverseTree(child, initialNode, hasParent, isChildOf, initialEdges, passedRoot);
       }
     });

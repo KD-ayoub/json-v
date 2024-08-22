@@ -6,12 +6,15 @@ import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
 import { ThemeContext } from "./ThemeProvider";
 import useFullScreen from "../hooks/useFullScreen";
 import { ArrowsPointingInIcon } from "@heroicons/react/24/outline";
+import useChoice from "../visualize/lib/useChoice";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Header() {
     const { theme, toogleTheme } = useContext(ThemeContext);
     const { fullScreen, handlFullScreen } = useFullScreen();
-    console.log(theme);
+    const choice = useChoice((state) => state.choice);
+    const setChoice = useChoice((state) => state.setChoice);
+    console.log(theme, choice);
   return (
     <div className="w-full h-16 border-b border-gray-400 bg-[#ECECEC] flex items-center p-4">
       <p
@@ -21,12 +24,14 @@ export default function Header() {
         <span className="text-[#ffc248] text-[35px] font-[600]">&#125;</span> VIEW
       </p>
       <p
-        className={`ml-5 font-['inter'] font-[400] text-lg cursor-pointer px-2 rounded-md text-[#4E5660] ${inter.className}`}
+        className={`ml-5 font-['inter'] font-[400] text-lg cursor-pointer px-2 rounded-md ${!choice ? "bg-gray-500 text-white border border-gray-400" : "text-[#4E5660]"} ${inter.className}`}
+        onClick={() => setChoice(false)}
       >
         Graph
       </p>
       <p
-        className={`ml-5 font-['inter'] font-[400] text-lg cursor-pointer border border-gray-400 px-2 rounded-md bg-gray-500 text-white ${inter.className}`}
+        className={`ml-5 font-['inter'] font-[400] text-lg cursor-pointer ${choice ? "bg-gray-500 text-white border border-gray-400" : "text-[#4E5660]"} px-2 rounded-md  ${inter.className}`}
+      onClick={() => setChoice(true)}
       >
         Tree
       </p>
