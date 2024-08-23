@@ -15,6 +15,7 @@ import CustomeNode from "../components/CustomeNode";
 import useChoice from "./lib/useChoice";
 import { json } from "stream/consumers";
 import { JSONTree } from 'react-json-tree';
+import useRotation from "./lib/useRotation";
 
 enum CanvasPosition {
   CENTER = "center",
@@ -56,7 +57,7 @@ export default function Visualize() {
   const collapsedEdges = useNodes((state) => state.collapsedEdges);
   const setZusNode = useNodes((state) => state.setNode);
   const choice = useChoice((state) => state.choice);
-
+  const direction = useRotation((state) => state.direction);
   const debouncedHandleOnchange = useCallback(
     debounce((value: string | undefined) => {
       console.log("Entered debounce", value);
@@ -83,6 +84,7 @@ export default function Visualize() {
   }
   // Cleanup on unmount
   useEffect(() => {
+    console.log("dirr", direction)
     return () => {
       debouncedHandleOnchange.cancel();
     };
@@ -92,6 +94,7 @@ export default function Visualize() {
     <div className="w-full h-[calc(100%_-_4rem)]">
       <Container style={{ height: "100%", background: "#80808080" }}>
         <Section minSize={300} maxSize={600} defaultSize={400}>
+          {direction}
           <Editor
             height={"100%"}
             loading=""
@@ -106,11 +109,12 @@ export default function Visualize() {
           />
         </Section>
         <Bar size={2} style={{ background: "#000", cursor: "col-resize" }} />
-        <Section minSize={0} className="bg-[#F3F3F3]">
+        <Section minSize={0} className={`bg-[#F3F3F3]`}>
           {!choice && (
             <div className="w-full h-full relative">
               <Zoomable>
                 <Canvas
+                key={direction}
                   defaultPosition={"" as CanvasPosition}
                   readonly={true}
                   zoomable={false}
@@ -123,21 +127,19 @@ export default function Visualize() {
                       : zusEdge
                   }
                   node={(p) => <CustomeNode {...p} />}
-                  direction="RIGHT"
+                  direction={direction}
                   maxHeight={50000}
                   maxWidth={50000}
                 />
               </Zoomable>
             </div>
           )}
-        </Section>
           {choice && (
-        <Section minSize={0} className={`bg-[#F3F3F3]  h-full w-full`}>
-            <div className="max-h-full overflow-auto">
+            <div className="max-h-full w-full overflow-auto">
               <JSONTree data={editorData} theme={lightGrayTheme} invertTheme={false}/>
             </div>
-        </Section>
           )}
+        </Section>
       </Container>
     </div>
   );

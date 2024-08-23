@@ -79,7 +79,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
   return (
     <div
       ref={divRef}
-      className="absolute w-full h-full"
+      className={`absolute w-full h-full ${isDragging && "cursor-move"}`}
       onWheel={handlWheel}
       onMouseDown={handlMouseDown}
       onMouseMove={handlMouseMove}

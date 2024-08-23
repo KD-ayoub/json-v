@@ -7,6 +7,9 @@ import { ThemeContext } from "./ThemeProvider";
 import useFullScreen from "../hooks/useFullScreen";
 import { ArrowsPointingInIcon } from "@heroicons/react/24/outline";
 import useChoice from "../visualize/lib/useChoice";
+import graphSvg from "@/app/assets/graph.svg";
+import useRotation, { Direction } from "../visualize/lib/useRotation";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Header() {
@@ -14,7 +17,18 @@ export default function Header() {
     const { fullScreen, handlFullScreen } = useFullScreen();
     const choice = useChoice((state) => state.choice);
     const setChoice = useChoice((state) => state.setChoice);
+    const degree = useRotation((state) => state.degree);
+    const direction = useRotation((state) => state.direction);
+    const setDirection = useRotation((state) => state.setDirection);
     console.log(theme, choice);
+
+    function handleDirection() {
+      const direc: Direction[] = ["RIGHT", "DOWN", "LEFT", "UP"];
+      const current = direc.indexOf(direction);
+      const next = (current + 1) % direc.length;
+      setDirection(direc[next]);
+    }
+
   return (
     <div className="w-full h-16 border-b border-gray-400 bg-[#ECECEC] flex items-center p-4">
       <p
@@ -36,7 +50,8 @@ export default function Header() {
         Tree
       </p>
       <div className="flex flex-1 justify-end gap-5">
-        <Cog6ToothIcon className="w-8 cursor-pointer"/>
+        <img src={graphSvg.src} className={`w-8 cursor-pointer `} style={{ transform: `rotate(${degree}deg)` }} onClick={handleDirection}/>
+        {/* <Cog6ToothIcon className="w-8 cursor-pointer"/> */}
         { theme === "dark" && <MoonIcon className="w-8 cursor-pointer" onClick={toogleTheme}/>}
         { theme === "light" && <SunIcon className="w-8 cursor-pointer" onClick={toogleTheme}/>}
         { !fullScreen && <ArrowsPointingOutIcon className="w-8 cursor-pointer" onClick={handlFullScreen}/>}

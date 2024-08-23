@@ -29,7 +29,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
       if (child.collapse) {
         findChildren(child.id);
       }
-    })
+    });
 
     const updatedNodes = nodes.filter(
       (node) => !collect.some((col) => col.id === node.id)
@@ -46,7 +46,6 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
     });
     setCollapsedNodes(updatedNodes, true);
     setCollapsedEdges(copyEdges, true);
-
   }
   function handleClick(e: MouseEvent, id: string) {
     const index = nodes.findIndex((node) => node.id === id);
@@ -62,13 +61,16 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
 
   return (
     <Node
-      {...nodeProps} 
-      style={{ fill: "#F5F8FA"}}
+      {...nodeProps}
+      style={{ fill: "#F5F8FA" }}
       label={<Label style={{ fill: "#535353" }} />}
     >
       {(event) => (
-      
-      <foreignObject className="cursor-pointer" height={event.height} width={event.width} >
+        <foreignObject
+          className="cursor-pointer select-none"
+          height={event.height}
+          width={event.width}
+        >
           {event.node.data.map((value: MyNodeData, idx: number) => {
             const padding =
               event.node.data.length > 1
@@ -84,15 +86,46 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                 : "text-[#AFAFAF]";
             const boolean =
               value.type === "boolean" && value.value ? "true" : "false";
+            function isValidUrl(url: string) {
+              try {
+                return Boolean(new URL(url));
+              } catch (error) {
+                return false;
+              }
+            }
             if (value.isParent) {
+              let jsx = (
+                <span
+                  className={`ml-2 ${
+                    value.isArrayParent ? "text-[#FF6B00]" : "text-[#751DEA]"
+                  } max-w-[250px] text-center whitespace-nowrap overflow-hidden text-ellipsis`}
+                >
+                  {value.key}
+                </span>
+              );
+              if (isValidUrl(value.key)) {
+                jsx = (
+                  <span>
+                    <a
+                      href={value.key}
+                      target="_blank"
+                      className={`ml-2 ${
+                        value.isArrayParent
+                          ? "text-[#FF6B00]"
+                          : "text-[#751DEA]"
+                      } max-w-[250px] text-center whitespace-nowrap underline overflow-hidden text-ellipsis`}
+                    >
+                      {value.key}
+                    </a>
+                  </span>
+                );
+              }
               return (
                 <span
                   key={idx}
                   className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
                 >
-                  <span className={`ml-2 ${value.isArrayParent ? "text-[#FF6B00]" : "text-[#751DEA]"} max-w-[250px] text-center whitespace-nowrap overflow-hidden text-ellipsis`}>
-                    {value.key}
-                  </span>
+                  {jsx}
                   <span className="p-[10px]">({value.length})</span>
                   <button
                     className="w-10 h-full flex justify-center items-center bg-[#465772]"
@@ -109,20 +142,55 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
               );
             }
             if (value.isAlone) {
+              let jsx = (
+                <span
+                  key={idx}
+                  className={`w-full block text-[12px] ${textColor} font-[500] p-[10px]`}
+                >
+                  {value.type === "string"
+                    ? value.value
+                    : value.type === "boolean"
+                    ? boolean
+                    : value.type === "null"
+                    ? "null"
+                    : value.value}
+                </span>
+              );
+              if (isValidUrl(value.value)) {
+                jsx = (
+                  <span
+                    key={idx}
+                    className={`w-full block text-[12px] ${textColor} font-[500] p-[10px]`}
+                  >
+                    <span>
+                      <a
+                        key={idx}
+                        href={value.value}
+                        target="_blank"
+                        className="underline"
+                      >
+                        {value.value}
+                      </a>
+                    </span>
+                  </span>
+                );
+              }
+              return jsx;
+            }
+            if (isValidUrl(value.value)) {
               return (
                 <span
-                key={idx}
-                className={`w-full block text-[12px] ${textColor}  font-[500] p-[10px]`}
-              >
-                {value.type === "string"
-                  ? value.value
-                  : value.type === "boolean"
-                  ? boolean
-                  : value.type === "null"
-                  ? "null"
-                  : value.value}
-              </span>
-              )
+                  key={idx}
+                  className={`w-full block text-[12px] max-w-[650px] whitespace-nowrap overflow-hidden text-ellipsis ${textColor} font-[500] ${padding}`}
+                >
+                  <span className="text-[#751DEA]">{value.key}: </span>
+                  <span>
+                    <a href={value.value} target="_blank" className="underline">
+                      {value.value}
+                    </a>
+                  </span>
+                </span>
+              );
             }
             return (
               <span
