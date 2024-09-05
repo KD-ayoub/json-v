@@ -67,7 +67,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
     >
       {(event) => (
         <foreignObject
-          className="cursor-pointer select-none"
+          className="pointer-events-none select-none"
           height={event.height}
           width={event.width}
         >
@@ -128,7 +128,7 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
                   {jsx}
                   <span className="p-[10px]">({value.length})</span>
                   <button
-                    className="w-10 h-full flex justify-center items-center bg-[#465772]"
+                    className="w-10 h-full flex pointer-events-auto justify-center items-center bg-[#465772]"
                     onClick={(e) => handleClick(e, event.node.id)}
                   >
                     {!(event.node as MyNodeType).collapse && (

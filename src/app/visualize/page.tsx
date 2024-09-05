@@ -14,8 +14,9 @@ import useNodes from "./lib/GraphNodes";
 import CustomeNode from "../components/CustomeNode";
 import useChoice from "./lib/useChoice";
 import { json } from "stream/consumers";
-import { JSONTree } from 'react-json-tree';
+import { JSONTree } from "react-json-tree";
 import useRotation from "./lib/useRotation";
+import { Bars3CenterLeftIcon } from "@heroicons/react/16/solid";
 
 enum CanvasPosition {
   CENTER = "center",
@@ -43,11 +44,12 @@ const lightGrayTheme = {
   base0C: "#20B2AA", // Support, regular expressions, escape characters (e.g., Light Sea Green)
   base0D: "#1E90FF", // Functions, methods, attribute IDs (e.g., Dodger Blue color)
   base0E: "#BA55D3", // Keywords, storage, selector (e.g., Medium Orchid color)
-  base0F: "#8B0000"  // Deprecated, opening/closing embedded language tags (e.g., Dark Red)
+  base0F: "#8B0000", // Deprecated, opening/closing embedded language tags (e.g., Dark Red)
 };
 
 export default function Visualize() {
   const [editorData, setEditorData] = useState<any>();
+  const [collapseEditor, setCollapseEditor] = useState(false);
   const [loading, setLoading] = useState(true);
   const zusNode = useNodes((state) => state.nodes);
   const zusEdge = useNodes((state) => state.edges);
@@ -72,19 +74,21 @@ export default function Visualize() {
         console.log("JSON parse error");
         setEdges([]);
         setNodes([]);
+        setEditorData(undefined);
         setLoading(true);
       }
     }, 800),
     []
   );
   function handleErrors(errors: any) {
-    console.log("Error_onvalidate", errors)
+    console.log("Error_onvalidate", errors);
     setEdges([]);
-        setNodes([]);
+    setNodes([]);
+    setEditorData(undefined);
   }
   // Cleanup on unmount
   useEffect(() => {
-    console.log("dirr", direction)
+    console.log("dirr", direction);
     return () => {
       debouncedHandleOnchange.cancel();
     };
@@ -92,9 +96,29 @@ export default function Visualize() {
 
   return (
     <div className="w-full h-[calc(100%_-_4rem)]">
+      <button
+        className="absolute z-50 bottom-0 m-2 rounded-lg bg-[#F8F8F8]"
+        onClick={() => setCollapseEditor(!collapseEditor)}
+      >
+        <svg
+          stroke="currentColor"
+          fill="currentColor"
+          stroke-width="0"
+          viewBox="0 0 24 24"
+          height="1em"
+          width="1em"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M21 19V5c0-1.103-.897-2-2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2zm-11 0V5h9l.002 14H10z"></path>
+        </svg>
+      </button>
       <Container style={{ height: "100%", background: "#80808080" }}>
-        <Section minSize={300} maxSize={600} defaultSize={400}>
-          {direction}
+        <Section
+          hidden={collapseEditor}
+          minSize={300}
+          maxSize={600}
+          defaultSize={400}
+        >
           <Editor
             height={"100%"}
             loading=""
@@ -114,7 +138,7 @@ export default function Visualize() {
             <div className="w-full h-full relative">
               <Zoomable>
                 <Canvas
-                key={direction}
+                  key={direction}
                   defaultPosition={"" as CanvasPosition}
                   readonly={true}
                   zoomable={false}
@@ -136,7 +160,11 @@ export default function Visualize() {
           )}
           {choice && (
             <div className="max-h-full w-full overflow-auto">
-              <JSONTree data={editorData} theme={lightGrayTheme} invertTheme={false}/>
+              <JSONTree
+                data={editorData}
+                theme={lightGrayTheme}
+                invertTheme={false}
+              />
             </div>
           )}
         </Section>
