@@ -40,6 +40,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
     (e: MouseEvent) => {
       setIsDragging(true);
       setPrevPosition({ x: e.clientX, y: e.clientY });
+      e.stopPropagation();
     },
     [isDragging, prevPosition]
   );
@@ -68,14 +69,14 @@ export default function Zoomable({ children }: PropsWithChildren) {
   //     backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px;",
   //     backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px;"
   // }}
-  // useEffect(() => {
-  //   window.addEventListener("wheel", (e) => e.preventDefault(), {
-  //     passive: false,
-  //   });
-  //   return () => {
-  //     window.removeEventListener("wheel", (e) => e.preventDefault());
-  //   };
-  // }, []);
+  useEffect(() => {
+    window.addEventListener("wheel", (e) => e.preventDefault(), {
+      passive: false,
+    });
+    return () => {
+      window.removeEventListener("wheel", (e) => e.preventDefault());
+    };
+  }, []);
   return (
     <div
       ref={divRef}

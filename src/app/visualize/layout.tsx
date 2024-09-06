@@ -4,13 +4,16 @@ import Header from "../components/Header";
 import ThemeProvider from "../components/ThemeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
+
+
 export default function VisualizeLayout({ children }: PropsWithChildren) {
   return (
-    <ThemeProvider>
-      <div className="w-screen h-screen">
-        <Header />
-        {children}
-      </div>
-    </ThemeProvider>
+
+      <ThemeProvider>
+        <div className="w-screen h-screen">
+          <Header />
+          {children}
+        </div>
+      </ThemeProvider>
   );
 }

@@ -50,7 +50,6 @@ const lightGrayTheme = {
 export default function Visualize() {
   const [editorData, setEditorData] = useState<any>();
   const [collapseEditor, setCollapseEditor] = useState(false);
-  const [loading, setLoading] = useState(true);
   const zusNode = useNodes((state) => state.nodes);
   const zusEdge = useNodes((state) => state.edges);
   const setEdges = useNodes((state) => state.setEdges);
@@ -68,14 +67,12 @@ export default function Visualize() {
         setNodes([]); // Clear nodes to avoid duplicates
         const json = JSON.parse(value || "");
         setZusNode(json);
-        setLoading(false);
         setEditorData(json);
       } catch (err) {
         console.log("JSON parse error");
         setEdges([]);
         setNodes([]);
         setEditorData(undefined);
-        setLoading(true);
       }
     }, 800),
     []
