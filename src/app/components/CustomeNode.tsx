@@ -67,10 +67,21 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
     setCollapse(!collapse);
     filterCollapsedChildren(newNodes, id);
   }
+  function formateData(data: MyNodeData[]) {
+    console.log("inside function",data)
+    let obj = { }
+    for (let i = 0; i < data.length; i++) {
+      if (!data[i].key) return data[i].value
+      if (!data[i].value) return data[i].key
+      const constructed = { [data[i].key]: data[i].value };
+      Object.assign(obj, constructed);
+    }
+    return obj;
+  }
   function handleNodeClick(event: MouseEvent, data: NodeData) {
-    console.log("node clicked", event, data);
+    const returned = formateData(data.data);
     setIsModalOpen(true);
-    setModalContent(<CopyBoard json={JSON.stringify({ key: 34 }, null, 2)} />);
+    setModalContent(<CopyBoard json={JSON.stringify(returned, null, 2)} />);
   }
   function handleModalCancel() {
     setIsModalOpen(false);
