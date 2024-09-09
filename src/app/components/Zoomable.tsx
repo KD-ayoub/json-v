@@ -13,6 +13,7 @@ import useModal from "../visualize/lib/useModal";
 export default function Zoomable({ children }: PropsWithChildren) {
   const divRef = useRef<HTMLDivElement | null>(null);
   const childDivRef = useRef<HTMLDivElement | null>(null);
+  const choice = useChoice((state) => state.choice);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [prevPosition, setPrevPosition] = useState({ x: 0, y: 0 });
@@ -67,14 +68,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
     },
     [isDragging]
   );
-  useEffect(() => {
-    window.addEventListener("wheel", (e) => e.preventDefault(), {
-      passive: false,
-    });
-    return () => {
-      window.removeEventListener("wheel", (e) => e.preventDefault());
-    };
-  }, []);
+  
   return (
     <div
       ref={divRef}

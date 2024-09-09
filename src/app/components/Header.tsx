@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Inter } from "next/font/google";
 import { Cog6ToothIcon, MoonIcon, SunIcon } from "@heroicons/react/16/solid";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
@@ -28,7 +28,6 @@ export default function Header() {
       const next = (current + 1) % direc.length;
       setDirection(direc[next]);
     }
-
   return (
     <div className="w-full h-16 border-b border-gray-400 bg-[#ECECEC] flex items-center p-4">
       <p
