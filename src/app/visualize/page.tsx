@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Editor, { EditorProps, OnValidate } from "@monaco-editor/react";
 import { Container, Section, Bar } from "@column-resizer/react";
 import { Canvas, Label, Node } from "reaflow";
@@ -59,6 +59,19 @@ export default function Visualize() {
   const setZusNode = useNodes((state) => state.setNode);
   const choice = useChoice((state) => state.choice);
   const direction = useRotation((state) => state.direction);
+  const memoizedNodes = useMemo(
+    () => (collapsedNodes.length > 0 ? collapsedNodes : zusNode),
+    [collapsedNodes, zusNode]
+  );
+  const memoizedEdges = useMemo(
+    () =>
+      collapsedEdges.length > 0
+        ? collapsedEdges
+        : collapsedEdges.length === 0 && collapsedNodes.length > 0
+        ? collapsedEdges
+        : zusEdge,
+    [collapsedEdges, collapsedNodes, zusNode]
+  );
   const debouncedHandleOnchange = useCallback(
     debounce((value: string | undefined) => {
       console.log("Entered debounce", value);
@@ -137,16 +150,13 @@ export default function Visualize() {
                 <Canvas
                   key={direction}
                   defaultPosition={"" as CanvasPosition}
-                  readonly={true}
+                  readonly={false}
+                  dragEdge={null}
+                  dragNode={null}
+                  arrow={null}
                   zoomable={false}
-                  nodes={collapsedNodes.length > 0 ? collapsedNodes : zusNode}
-                  edges={
-                    collapsedEdges.length > 0
-                      ? collapsedEdges
-                      : collapsedEdges.length === 0 && collapsedNodes.length > 0
-                      ? collapsedEdges
-                      : zusEdge
-                  }
+                  nodes={memoizedNodes}
+                  edges={memoizedEdges}
                   node={(p) => <CustomeNode {...p} />}
                   direction={direction}
                   maxHeight={50000}

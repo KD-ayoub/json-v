@@ -1,5 +1,4 @@
 import { LinkIcon } from "@heroicons/react/16/solid";
-import { MantineProvider } from "@mantine/core";
 import Image from "next/image";
 
 export default function Home() {

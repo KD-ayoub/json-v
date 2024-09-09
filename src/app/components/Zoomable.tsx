@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import useChoice from "../visualize/lib/useChoice";
+import useModal from "../visualize/lib/useModal";
 
 export default function Zoomable({ children }: PropsWithChildren) {
   const divRef = useRef<HTMLDivElement | null>(null);
@@ -40,13 +41,13 @@ export default function Zoomable({ children }: PropsWithChildren) {
     (e: MouseEvent) => {
       setIsDragging(true);
       setPrevPosition({ x: e.clientX, y: e.clientY });
-      e.stopPropagation();
     },
     [isDragging, prevPosition]
   );
 
   const handlMouseMove = useCallback(
     (e: MouseEvent) => {
+      e.stopPropagation();
       if (!isDragging || !childDivRef.current) return;
       const deltaX = e.clientX - prevPosition.x;
       const deltaY = e.clientY - prevPosition.y;
@@ -59,16 +60,13 @@ export default function Zoomable({ children }: PropsWithChildren) {
     },
     [prevPosition, position]
   );
-  const handlMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, [isDragging]);
-  /// background
-  //   style={{
-  //     backgroundImage:
-  //       "linear-gradient(#E4E4E4 1.5px, transparent 1.5px),linear-gradient(90deg, #E4E4E4 1.5px, transparent 1.5px),linear-gradient(#E4E4E4 1px, transparent 1px),linear-gradient(90deg, #E4E4E4 1px, transparent 1px);",
-  //     backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px;",
-  //     backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px;"
-  // }}
+  const handlMouseUp = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      setIsDragging(false);
+    },
+    [isDragging]
+  );
   useEffect(() => {
     window.addEventListener("wheel", (e) => e.preventDefault(), {
       passive: false,

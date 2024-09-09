@@ -1,21 +1,25 @@
-import React, { MouseEvent, useState } from "react";
+import React, {
+  MouseEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Label, Node, NodeData, NodeProps } from "reaflow";
 import useNodes, { MyNodeData, MyNodeType } from "../visualize/lib/GraphNodes";
 import { BoltSlashIcon, LinkIcon } from "@heroicons/react/16/solid";
 import { produce } from "immer";
 import { uniq } from "lodash";
 import { Modal } from "antd";
-import useModal from "antd/es/modal/useModal";
 import CopyBoard from "./CopyBoard";
+import useModal from "../visualize/lib/useModal";
 
 export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [ instance, contextHolder ] = useModal();
+  const [modalContent, setModalContent] = useState<ReactNode>();
   const [collapse, setCollapse] = useState(false);
   const edges = useNodes((state) => state.edges);
   const nodes = useNodes((state) => state.nodes);
-  const collapsedNodes = useNodes((state) => state.collapsedNodes);
-  const collapsedEdges = useNodes((state) => state.collapsedEdges);
   const setCollapsedNodes = useNodes((state) => state.setCollapsedNodes);
   const setCollapsedEdges = useNodes((state) => state.setCollapsedEdges);
   const setNodes = useNodes((state) => state.setNodes);
@@ -63,19 +67,14 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
     setCollapse(!collapse);
     filterCollapsedChildren(newNodes, id);
   }
-  function handleNodeClick(event: MouseEvent,data: NodeData) {
-      console.log("node clicked", event, data);
-      event.preventDefault();
-      if (event.type === "click") {
-
-        Modal.info({
-          title: "Node content",
-          content: ( <CopyBoard json={JSON.stringify({ tes: 34 }, null, 2)} /> ),
-          closable: true,
-        })
-      }
+  function handleNodeClick(event: MouseEvent, data: NodeData) {
+    console.log("node clicked", event, data);
+    setIsModalOpen(true);
+    setModalContent(<CopyBoard json={JSON.stringify({ key: 34 }, null, 2)} />);
   }
-
+  function handleModalCancel() {
+    setIsModalOpen(false);
+  }
   return (
     <>
       <Node
@@ -90,7 +89,6 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
             className="pointer-events-none select-none"
             height={event.height}
             width={event.width}
-            onClick={() => console.log("node clcked")}
           >
             {event.node.data.map((value: MyNodeData, idx: number) => {
               const padding =
@@ -236,6 +234,16 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
           </foreignObject>
         )}
       </Node>
+      {isModalOpen && (
+        <Modal
+          open={isModalOpen}
+          title="Node Content"
+          footer={null}
+          onCancel={handleModalCancel}
+        >
+          {modalContent}
+        </Modal>
+      )}
     </>
   );
 }
