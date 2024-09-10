@@ -11,7 +11,7 @@ export default function CopyBoard({ json }: { json: string }) {
   return (
     <div className="w-full max-w-lg">
       <div className="relative bg-gray-50 rounded-lg dark:bg-gray-700 p-4">
-        <div className="overflow-scroll h-[fit-content] max-h-full">
+        <div className="overflow-auto max-h-64">
           <pre>
             <code
               id="code-block"

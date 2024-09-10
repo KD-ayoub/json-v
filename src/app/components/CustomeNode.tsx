@@ -14,9 +14,10 @@ import { Modal } from "antd";
 import CopyBoard from "./CopyBoard";
 import useModal from "../visualize/lib/useModal";
 
-export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<ReactNode>();
+const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
+  const { isModalOpen, modalContent, setModalContent, setIsModalOpen } = useModal();
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [modalContent, setModalContent] = useState<ReactNode>();
   const [collapse, setCollapse] = useState(false);
   const edges = useNodes((state) => state.edges);
   const nodes = useNodes((state) => state.nodes);
@@ -68,24 +69,27 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
     filterCollapsedChildren(newNodes, id);
   }
   function formateData(data: MyNodeData[]) {
-    console.log("inside function",data)
-    let obj = { }
+    console.log("inside function", data);
+    let obj = {};
     for (let i = 0; i < data.length; i++) {
-      if (!data[i].key) return data[i].value
-      if (!data[i].value) return data[i].key
+      if (data[i].key === "") return data[i].value;
+      if (data[i].value === "") return data[i].key;
       const constructed = { [data[i].key]: data[i].value };
       Object.assign(obj, constructed);
     }
     return obj;
   }
+
   function handleNodeClick(event: MouseEvent, data: NodeData) {
     const returned = formateData(data.data);
-    setIsModalOpen(true);
+    console.log("ret", returned);
     setModalContent(<CopyBoard json={JSON.stringify(returned, null, 2)} />);
+    setIsModalOpen(true);
   }
   function handleModalCancel() {
     setIsModalOpen(false);
   }
+  
   return (
     <>
       <Node
@@ -245,16 +249,8 @@ export default function CustomeNode(nodeProps: NodeProps<NodeData>) {
           </foreignObject>
         )}
       </Node>
-      {isModalOpen && (
-        <Modal
-          open={isModalOpen}
-          title="Node Content"
-          footer={null}
-          onCancel={handleModalCancel}
-        >
-          {modalContent}
-        </Modal>
-      )}
     </>
   );
 }
+
+export default React.memo(CustomeNode);

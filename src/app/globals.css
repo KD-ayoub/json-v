@@ -2,3 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
+.cursor-custom {
+    cursor: url('/graphCursor.svg'), auto;
+  }

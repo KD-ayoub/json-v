@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Editor, { EditorProps, OnValidate } from "@monaco-editor/react";
 import { Container, Section, Bar } from "@column-resizer/react";
-import { Canvas, Label, Node } from "reaflow";
+import { Canvas, ElkRoot, Label, Node } from "reaflow";
 import dynamic from "next/dynamic";
 import Zoomable from "../components/Zoomable";
 import debounce from "lodash/debounce";
@@ -17,6 +17,8 @@ import { json } from "stream/consumers";
 import { JSONTree } from "react-json-tree";
 import useRotation from "./lib/useRotation";
 import { Bars3CenterLeftIcon } from "@heroicons/react/16/solid";
+import useModal from "./lib/useModal";
+import { Modal } from "antd";
 
 enum CanvasPosition {
   CENTER = "center",
@@ -72,6 +74,8 @@ export default function Visualize() {
         : zusEdge,
     [collapsedEdges, collapsedNodes, zusNode]
   );
+  const [canvasWidth, setCanvasWidth] = useState(2000);
+  const [canvasHeight, setCanvasHeight] = useState(2000);
   const debouncedHandleOnchange = useCallback(
     debounce((value: string | undefined) => {
       console.log("Entered debounce", value);
@@ -90,6 +94,10 @@ export default function Visualize() {
     }, 800),
     []
   );
+  function handleLayoutChange(layout: ElkRoot) {
+    setCanvasWidth((layout.width as number) + 50);
+    setCanvasHeight((layout.height as number) + 50);
+  }
   function handleErrors(errors: any) {
     console.log("Error_onvalidate", errors);
     setEdges([]);
@@ -103,7 +111,6 @@ export default function Visualize() {
       debouncedHandleOnchange.cancel();
     };
   }, [debouncedHandleOnchange, choice]);
-
   return (
     <div className="w-full h-[calc(100%_-_4rem)]">
       <button
@@ -150,17 +157,21 @@ export default function Visualize() {
                 <Canvas
                   key={direction}
                   defaultPosition={"" as CanvasPosition}
-                  readonly={false}
+                  onLayoutChange={handleLayoutChange}
+                  readonly={true}
                   dragEdge={null}
                   dragNode={null}
-                  arrow={null}
                   zoomable={false}
+                  // pannable={false}
+                  // fit={true}
                   nodes={memoizedNodes}
                   edges={memoizedEdges}
                   node={(p) => <CustomeNode {...p} />}
                   direction={direction}
-                  maxHeight={50000}
-                  maxWidth={50000}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  maxHeight={canvasHeight}
+                  maxWidth={canvasWidth}
                 />
               </Zoomable>
             </div>

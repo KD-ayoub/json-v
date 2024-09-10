@@ -1,4 +1,5 @@
 import { set } from "lodash";
+import { ReactNode } from "react";
 import { create } from "zustand";
 
 type Position = {
@@ -8,23 +9,29 @@ type Position = {
 
 type State = {
     isModalOpen: boolean;
-    previousPosition: Position
+    modalContent: ReactNode;
+    modalClosed: true | null
 }
 
 type Actions = {
     setIsModalOpen: (isOpen: boolean) => void,
-    setPrevPosition: (prev: Position) => void
+    setModalContent: (mco: ReactNode) => void,
+    setModalClosed: (cls: true | null) => void,
 }
 
 const useModal = create<State & Actions>((set) => ({
     isModalOpen: false,
-    previousPosition: { x: 0, y: 0 },
+    modalContent: null,
+    modalClosed: null,
     setIsModalOpen: (isOpen) => {
         set({ isModalOpen: isOpen })
     },
-    setPrevPosition: (prev) => {
-        set({ previousPosition: prev })
-    }
+    setModalContent: (mco) => {
+        set({ modalContent: mco })
+    },
+    setModalClosed: (cls) => {
+        set({ modalClosed: cls })
+    },
 }));
 
 export default useModal;
