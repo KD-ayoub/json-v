@@ -144,6 +144,7 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                       <a
                         href={value.key}
                         target="_blank"
+                        rel="noopener"
                         className={`ml-2 ${
                           value.isArrayParent
                             ? "text-[#FF6B00]"
@@ -201,8 +202,9 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                         <a
                           key={idx}
                           href={value.value}
+                          rel="noopener"
                           target="_blank"
-                          className="underline"
+                          className="underline pointer-events-auto"
                         >
                           {value.value}
                         </a>
@@ -223,7 +225,8 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                       <a
                         href={value.value}
                         target="_blank"
-                        className="underline"
+                        rel="noopener"
+                        className="underline pointer-events-auto"
                       >
                         {value.value}
                       </a>
