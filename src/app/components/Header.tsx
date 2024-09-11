@@ -1,7 +1,12 @@
 "use client";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Inter } from "next/font/google";
-import { Cog6ToothIcon, MoonIcon, SunIcon } from "@heroicons/react/16/solid";
+import {
+  ArrowDownTrayIcon,
+  Cog6ToothIcon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/16/solid";
 import { ArrowsPointingOutIcon } from "@heroicons/react/24/outline";
 import { ThemeContext } from "./ThemeProvider";
 import useFullScreen from "../hooks/useFullScreen";
@@ -11,11 +16,20 @@ import graphSvg from "@/app/assets/graph.svg";
 import useRotation, { Direction } from "../visualize/lib/useRotation";
 import { Modal } from "antd";
 import useModal from "../visualize/lib/useModal";
+import DownloadModalContent from "./DownloadModalContent";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Header() {
-  const { isModalOpen, modalContent, setIsModalOpen, setModalClosed } = useModal();
+  const {
+    isModalOpen,
+    modalContent,
+    title,
+    setIsModalOpen,
+    setModalClosed,
+    setModalContent,
+    setModalTitle
+  } = useModal();
   const { theme, toogleTheme } = useContext(ThemeContext);
   const { fullScreen, handlFullScreen } = useFullScreen();
   const choice = useChoice((state) => state.choice);
@@ -24,7 +38,11 @@ export default function Header() {
   const direction = useRotation((state) => state.direction);
   const setDirection = useRotation((state) => state.setDirection);
   console.log(theme, choice);
-
+  function handleDownload() {
+    setModalTitle("Download Image");
+    setIsModalOpen(true);
+    setModalContent(<DownloadModalContent />);
+  }
   function handleDirection() {
     const direc: Direction[] = ["RIGHT", "DOWN", "LEFT", "UP"];
     const current = direc.indexOf(direction);
@@ -70,7 +88,10 @@ export default function Header() {
           style={{ transform: `rotate(${degree}deg)` }}
           onClick={handleDirection}
         />
-        {/* <Cog6ToothIcon className="w-8 cursor-pointer"/> */}
+        <ArrowDownTrayIcon
+          className="w-8 cursor-pointer"
+          onClick={handleDownload}
+        />
         {theme === "dark" && (
           <MoonIcon className="w-8 cursor-pointer" onClick={toogleTheme} />
         )}
@@ -92,7 +113,7 @@ export default function Header() {
       </div>
       <Modal
         open={isModalOpen}
-        title="Node Content"
+        title={title}
         footer={null}
         onCancel={() => {
           setIsModalOpen(false);

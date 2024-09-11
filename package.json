@@ -13,6 +13,8 @@
     "@heroicons/react": "^2.1.4",
     "@monaco-editor/react": "^4.6.0",
     "antd": "^5.20.5",
+    "formik": "^2.4.6",
+    "html-to-image": "^1.11.11",
     "immer": "^10.1.1",
     "jsonc-parser": "^3.3.1",
     "lodash": "^4.17.21",
@@ -21,6 +23,8 @@
     "react-dom": "^18",
     "react-json-tree": "^0.19.0",
     "reaflow": "^5.2.12",
+    "rgb-hex": "^4.1.0",
+    "yup": "^1.4.0",
     "zustand": "^4.5.4"
   },
   "devDependencies": {

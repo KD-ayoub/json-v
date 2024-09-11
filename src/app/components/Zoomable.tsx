@@ -37,12 +37,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
         const newPosX = -targetX * newScale + pointerX;
         const newPosY = -targetY * newScale + pointerY;
         setScale(newScale);
-        if (modalClosed) {
-          setPosition(savePrevious);
-        } else {
-          setPosition({ x: newPosX, y: newPosY });
-        }
-
+        setPosition({ x: newPosX, y: newPosY });
         childDivRef.current.style.transform = `translate(${position.x}px, ${position.y}px) scale(${scale})`;
       }
     },
@@ -53,8 +48,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
       console.log("modal", isModalOpen);
       if (modalClosed) {
         setIsDragging(true);
-        // setPrevPosition(savePrevious);
-        setPosition(savePrevious)
+        setPosition(savePrevious);
         setModalClosed(null);
       } else {
         setIsDragging(true);
@@ -68,7 +62,7 @@ export default function Zoomable({ children }: PropsWithChildren) {
     if (isModalOpen) {
       console.log("downDown", position.x, position.y);
       setSavePrevious({ x: position.x, y: position.y });
-    }else if (modalClosed) {
+    } else if (modalClosed) {
       // Restore position when the modal closes
       setPosition(savePrevious);
       setModalClosed(null);

@@ -15,7 +15,7 @@ import CopyBoard from "./CopyBoard";
 import useModal from "../visualize/lib/useModal";
 
 const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
-  const { isModalOpen, modalContent, setModalContent, setIsModalOpen } = useModal();
+  const { setModalContent, setIsModalOpen, setModalTitle } = useModal();
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [modalContent, setModalContent] = useState<ReactNode>();
   const [collapse, setCollapse] = useState(false);
@@ -83,6 +83,7 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
   function handleNodeClick(event: MouseEvent, data: NodeData) {
     const returned = formateData(data.data);
     console.log("ret", returned);
+    setModalTitle("Node Content");
     setModalContent(<CopyBoard json={JSON.stringify(returned, null, 2)} />);
     setIsModalOpen(true);
   }

@@ -155,10 +155,11 @@ export default function Visualize() {
             <div className="w-full h-full relative">
               <Zoomable>
                 <Canvas
+                  className="test-class"
                   key={direction}
                   defaultPosition={"" as CanvasPosition}
                   onLayoutChange={handleLayoutChange}
-                  readonly={true}
+                  readonly={false}
                   dragEdge={null}
                   dragNode={null}
                   zoomable={false}

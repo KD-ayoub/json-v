@@ -1,6 +1,6 @@
 import { LinkIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
-
+import imgSvg from "@/app/assets/hello.svg";
 export default function Home() {
   return (
 
