@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Editor, { EditorProps, OnValidate } from "@monaco-editor/react";
 import { Container, Section, Bar } from "@column-resizer/react";
 import { Canvas, ElkRoot, Label, Node } from "reaflow";
@@ -19,6 +25,7 @@ import useRotation from "./lib/useRotation";
 import { Bars3CenterLeftIcon } from "@heroicons/react/16/solid";
 import useModal from "./lib/useModal";
 import { Modal } from "antd";
+import { ThemeContext } from "../components/ThemeProvider";
 
 enum CanvasPosition {
   CENTER = "center",
@@ -49,7 +56,34 @@ const lightGrayTheme = {
   base0F: "#8B0000", // Deprecated, opening/closing embedded language tags (e.g., Dark Red)
 };
 
+const darkGrayTheme = {
+  scheme: "Dark Gray",
+  author: "Your Name",
+  base00: "#1E1E1E", // Background
+  base01: "#262626", // Lighter background (used for status bars, line number, etc.)
+  base02: "#333333", // Selection background
+  base03: "#BEBEBE", // Comments, invisibles, line highlighting
+  base04: "#A3A3A3", // Darker background (used for status bars)
+  base05: "#FFFFFF", // Default text, variables, classes, identifiers
+  base06: "#AC7B66", // Secondary text, attributes, keywords
+  base07: "#FFBD38", // Darker text, primary content
+  base08: "#FF5555", // Error, invalid text
+  base09: "#FF6347", // Warnings, escape characters
+  base0A: "#32CD32", // Booleans (Lime Green for true/false)
+  base0B: "#FFBD38", // Strings (Warm Yellow)
+  base0C: "#FFBD38", // Support, regular expressions
+  base0D: "#FFBD38", // Functions, methods
+  base0E: "#A55D3A", // Keywords, storage, selector
+  base0F: "#8B0000", // Deprecated tags
+};
+
+
+
+
+
+
 export default function Visualize() {
+  const { theme, toogleTheme } = useContext(ThemeContext);
   const [editorData, setEditorData] = useState<any>();
   const [collapseEditor, setCollapseEditor] = useState(false);
   const zusNode = useNodes((state) => state.nodes);
@@ -112,7 +146,7 @@ export default function Visualize() {
     };
   }, [debouncedHandleOnchange, choice]);
   return (
-    <div className="w-full h-[calc(100%_-_4rem)]">
+    <div className="w-full h-[calc(100%_-_3.5rem)]">
       <button
         className="absolute z-50 bottom-0 m-2 rounded-lg bg-[#F8F8F8]"
         onClick={() => setCollapseEditor(!collapseEditor)}
@@ -147,10 +181,14 @@ export default function Visualize() {
             }}
             onValidate={handleErrors}
             onChange={debouncedHandleOnchange}
+            theme={theme === "dark" ? "vs-dark" : "light"}
           />
         </Section>
         <Bar size={2} style={{ background: "#000", cursor: "col-resize" }} />
-        <Section minSize={0} className={`bg-[#F3F3F3]`}>
+        <Section
+          minSize={0}
+          className={`${theme === "dark" ? "bg-[#1E1E1E]" : "bg-[#F3F3F3]"}`}
+        >
           {!choice && (
             <div className="w-full h-full relative">
               <Zoomable>
@@ -181,7 +219,7 @@ export default function Visualize() {
             <div className="max-h-full w-full overflow-auto">
               <JSONTree
                 data={editorData}
-                theme={lightGrayTheme}
+                theme={theme === "dark" ? darkGrayTheme : lightGrayTheme}
                 invertTheme={false}
               />
             </div>

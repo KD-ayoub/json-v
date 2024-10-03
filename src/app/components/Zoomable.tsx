@@ -5,6 +5,7 @@ import React, {
   PropsWithChildren,
   WheelEvent,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -12,8 +13,11 @@ import React, {
 import useChoice from "../visualize/lib/useChoice";
 import useModal from "../visualize/lib/useModal";
 import graphCursor from "../assets/graphCursor.svg";
+import { ThemeContext } from "./ThemeProvider";
 
 export default function Zoomable({ children }: PropsWithChildren) {
+  const { theme } = useContext(ThemeContext);
+  const gradientColor = theme === "dark" ? "#272626" : "#E4E4E4";
   const { isModalOpen, modalClosed, setModalClosed } = useModal();
   const divRef = useRef<HTMLDivElement | null>(null);
   const childDivRef = useRef<HTMLDivElement | null>(null);
@@ -106,10 +110,9 @@ export default function Zoomable({ children }: PropsWithChildren) {
       onMouseMove={handlMouseMove}
       onMouseUp={handlMouseUp}
       style={{
-        backgroundImage:
-          "linear-gradient(#E4E4E4 1.5px, transparent 1.5px),linear-gradient(90deg, #E4E4E4 1.5px, transparent 1.5px),linear-gradient(#E4E4E4 1px, transparent 1px),linear-gradient(90deg, #E4E4E4 1px, transparent 1px)",
+        backgroundImage: `linear-gradient(${gradientColor} 1.5px, transparent 1.5px), linear-gradient(90deg, ${gradientColor} 1.5px, transparent 1.5px), linear-gradient(${gradientColor} 1px, transparent 1px), linear-gradient(90deg, ${gradientColor} 1px, transparent 1px)`,
         backgroundPosition: "-1.5px -1.5px,-1.5px -1.5px,-1px -1px,-1px -1px",
-        backgroundSize: "100px 100px,100px 100px,20px 20px,20px 20px",
+        backgroundSize: "100px 100px, 100px 100px, 20px 20px, 20px 20px",
       }}
     >
       <div

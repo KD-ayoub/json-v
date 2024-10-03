@@ -14,9 +14,10 @@ import { ArrowsPointingInIcon } from "@heroicons/react/24/outline";
 import useChoice from "../visualize/lib/useChoice";
 import graphSvg from "@/app/assets/graph.svg";
 import useRotation, { Direction } from "../visualize/lib/useRotation";
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
 import useModal from "../visualize/lib/useModal";
 import DownloadModalContent from "./DownloadModalContent";
+import GraphSVg from "./GraphSvg";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,7 @@ export default function Header() {
     setIsModalOpen,
     setModalClosed,
     setModalContent,
-    setModalTitle
+    setModalTitle,
   } = useModal();
   const { theme, toogleTheme } = useContext(ThemeContext);
   const { fullScreen, handlFullScreen } = useFullScreen();
@@ -50,63 +51,75 @@ export default function Header() {
     setDirection(direc[next]);
   }
   return (
-    <div className="w-full h-16 border-b border-gray-400 bg-[#ECECEC] flex items-center p-4">
+    <div
+      className={`w-full h-14 ${
+        theme === "dark" ? "bg-[#262626]" : "bg-white"
+      } flex items-center p-4`}
+    >
       <p
-        className={`font-['inter'] font-[900] tracking-wide text-2xl ${inter.className}`}
+        className={`font-['inter'] font-[900] ${
+          theme === "dark" ? "text-white" : "text-black"
+        } tracking-wide text-2xl ${inter.className}`}
       >
-        <span className="text-[#ffc756] text-[35px] font-[600]">&#123;</span>
+        <span className="text-[#FFBD38] text-[35px] font-[600]">&#123;</span>
         JSON
-        <span className="text-[#ffc248] text-[35px] font-[600]">
+        <span className="text-[#FFBD38] text-[35px] font-[600]">
           &#125;
         </span>{" "}
         VIEW
       </p>
-      <p
-        className={`ml-5 font-['inter'] font-[400] text-lg cursor-pointer px-2 rounded-md ${
-          !choice
-            ? "bg-gray-500 text-white border border-gray-400"
-            : "text-[#4E5660]"
-        } ${inter.className}`}
+      <button
+        className={`ml-20 font-['inter'] font-[400] hover:border-b hover:border-[#FFBD38] text-lg ${
+          !choice ? " text-[#FFBD38] border-b border-[#FFBD38]" : theme === "dark" ? "text-white": "text-black"
+        }  ${inter.className}`}
         onClick={() => setChoice(false)}
       >
         Graph
-      </p>
-      <p
-        className={`ml-5 font-['inter'] font-[400] text-lg cursor-pointer ${
-          choice
-            ? "bg-gray-500 text-white border border-gray-400"
-            : "text-[#4E5660]"
-        } px-2 rounded-md  ${inter.className}`}
+      </button>
+      <button
+        className={`ml-5 font-['inter'] font-[400] hover:border-b  hover:border-[#FFBD38] text-lg ${
+          choice ? " text-[#FFBD38] border-b border-[#FFBD38]" : theme === "dark" ? "text-white": "text-black"
+        }  ${inter.className}`}
         onClick={() => setChoice(true)}
       >
         Tree
-      </p>
+      </button>
       <div className="flex flex-1 justify-end gap-5">
-        <img
-          src={graphSvg.src}
-          className={`w-8 cursor-pointer `}
-          style={{ transform: `rotate(${degree}deg)` }}
-          onClick={handleDirection}
+        <GraphSVg
+          color={theme === "dark" ? "white" : "dark"}
+          rotate={degree}
+          handleClick={handleDirection}
         />
         <ArrowDownTrayIcon
-          className="w-8 cursor-pointer"
+          className="w-6 cursor-pointer"
+          color={theme === "dark" ? "white" : "dark"}
           onClick={handleDownload}
         />
         {theme === "dark" && (
-          <MoonIcon className="w-8 cursor-pointer" onClick={toogleTheme} />
+          <MoonIcon
+            className="w-6 cursor-pointer"
+            color="white"
+            onClick={toogleTheme}
+          />
         )}
         {theme === "light" && (
-          <SunIcon className="w-8 cursor-pointer" onClick={toogleTheme} />
+          <SunIcon
+            className="w-6 cursor-pointer"
+            color="dark"
+            onClick={toogleTheme}
+          />
         )}
         {!fullScreen && (
           <ArrowsPointingOutIcon
-            className="w-8 cursor-pointer"
+            className="w-6 cursor-pointer"
+            color={theme === "dark" ? "white" : "dark"}
             onClick={handlFullScreen}
           />
         )}
         {fullScreen && (
           <ArrowsPointingInIcon
-            className="w-8 cursor-pointer"
+            className="w-6 cursor-pointer"
+            color={theme === "dark" ? "white" : "dark"}
             onClick={handlFullScreen}
           />
         )}
