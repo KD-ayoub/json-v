@@ -53,7 +53,7 @@ export default function Header() {
   return (
     <div
       className={`w-full h-14 ${
-        theme === "dark" ? "bg-[#262626]" : "bg-white"
+        theme === "dark" ? "bg-[#262626]" : "bg-[#fbfbfb]"
       } flex items-center p-4`}
     >
       <p

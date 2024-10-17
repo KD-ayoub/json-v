@@ -1,35 +1,45 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { ThemeContext } from "./ThemeProvider";
 
-export default function CopyBoard({ json }: { json: string }) {
+export default function CopyBoard({ json }: { json: string; }) {
+  const { theme, toogleTheme } = useContext(ThemeContext);
+
   const [copied, setCopied] = useState(false);
+
   function handleCopy() {
     navigator.clipboard.writeText(json).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   }
+
+  const backgroundColor = theme === "dark" ? "bg-gray-700" : "bg-gray-50";
+  const textColor = theme === "dark" ? "text-gray-400" : "text-gray-500";
+  const buttonBgColor = theme === "dark" ? "bg-gray-800" : "bg-white";
+  const buttonTextColor = theme === "dark" ? "text-gray-400" : "text-gray-900";
+  const buttonBorderColor = theme === "dark" ? "border-gray-600" : "border-gray-200";
+  const buttonHoverBgColor = theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100";
+  const copiedTextColor = theme === "dark" ? "text-blue-500" : "text-blue-700";
+
   return (
     <div className="w-full max-w-lg">
-      <div className="relative bg-gray-50 rounded-lg dark:bg-gray-700 p-4">
+      <div className={`relative rounded-lg p-4 ${backgroundColor}`}>
         <div className="overflow-auto max-h-64">
           <pre>
-            <code
-              id="code-block"
-              className="text-sm text-gray-500 dark:text-gray-400 whitespace-pre"
-            >
+            <code id="code-block" className={`text-sm whitespace-pre ${textColor}`}>
               {json}
             </code>
           </pre>
         </div>
-        <div className="absolute top-2 end-2 bg-gray-50 dark:bg-gray-700">
+        <div className={`absolute top-2 right-2 ${backgroundColor}`}>
           <button
-            className="text-gray-900 dark:text-gray-400 m-0.5 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border"
+            className={`m-0.5 py-2 px-2.5 inline-flex items-center justify-center rounded-lg border ${buttonBgColor} ${buttonTextColor} ${buttonBorderColor} ${buttonHoverBgColor}`}
             onClick={handleCopy}
           >
             {!copied && (
               <span id="default-message" className="inline-flex items-center">
                 <svg
-                  className="w-3 h-3 me-1.5"
+                  className="w-3 h-3 mr-1.5"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -43,7 +53,7 @@ export default function CopyBoard({ json }: { json: string }) {
             {copied && (
               <span id="success-message" className="inline-flex items-center">
                 <svg
-                  className="w-3 h-3 text-blue-700 dark:text-blue-500 me-1.5"
+                  className={`w-3 h-3 mr-1.5 ${copiedTextColor}`}
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -57,9 +67,7 @@ export default function CopyBoard({ json }: { json: string }) {
                     d="M1 5.917 5.724 10.5 15 1.5"
                   />
                 </svg>
-                <span className="text-xs font-semibold text-blue-700 dark:text-blue-500">
-                  Copied
-                </span>
+                <span className={`text-xs font-semibold ${copiedTextColor}`}>Copied</span>
               </span>
             )}
           </button>

@@ -14,6 +14,11 @@ pnpm dev
 bun dev
 ```
 
+## Resources
+
+- https://stackoverflow.com/questions/60190965/zoom-scale-at-mouse-position
+- https://www.youtube.com/watch?v=_39sNRsvOuw
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

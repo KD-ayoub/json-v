@@ -2,6 +2,7 @@ import React, {
   MouseEvent,
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -13,8 +14,10 @@ import { uniq } from "lodash";
 import { Modal } from "antd";
 import CopyBoard from "./CopyBoard";
 import useModal from "../visualize/lib/useModal";
+import { ThemeContext } from "./ThemeProvider";
 
 const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
+  const { theme, toogleTheme } = useContext(ThemeContext);
   const { setModalContent, setIsModalOpen, setModalTitle } = useModal();
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [modalContent, setModalContent] = useState<ReactNode>();
@@ -90,13 +93,17 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
   function handleModalCancel() {
     setIsModalOpen(false);
   }
-  
+
   return (
     <>
       <Node
         {...nodeProps}
-        style={{ fill: "#F5F8FA" }}
-        label={<Label style={{ fill: "#535353" }} />}
+        key={theme}
+        style={{
+          fill: theme === "dark" ? "#2E2E2E" : "#F5F8FA",
+          // stroke: theme === "dark" ? "#4B4B4B" : "#475872",
+        }}
+        // label={<Label style={{ fill: "#fff" }} />}
         className="pointer-events-auto"
         onClick={handleNodeClick}
       >
@@ -111,14 +118,22 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                 event.node.data.length > 1
                   ? "first:p-[10px_10px_0px_10px] last:p-[0px_10px_10px_10px] px-[10px]"
                   : "p-[10px]";
-              const textColor =
-                value.type === "string"
-                  ? "text-[#535353]"
-                  : value.type === "number"
-                  ? "text-[#FD0179]"
-                  : value.type === "boolean"
-                  ? "text-[#FF0000]"
-                  : "text-[#AFAFAF]";
+                  const textColor =
+                  value.type === "string"
+                    ? theme === "dark"
+                      ? "text-[#AFAFAF]"   // Dark mode: lighter gray
+                      : "text-[#535353]"   // Light mode: regular gray
+                    : value.type === "number"
+                    ? theme === "dark"
+                      ? "text-[#FF79B0]"   // Dark mode: softer pink
+                      : "text-[#FD0179]"   // Light mode: vibrant pink
+                    : value.type === "boolean"
+                    ? theme === "dark"
+                      ? "text-[#FF6666]"   // Dark mode: softer red
+                      : "text-[#FF0000]"   // Light mode: bright red
+                    : theme === "dark"
+                    ? "text-[#D3D3D3]"     // Dark mode: very light gray for others
+                    : "text-[#AFAFAF]"; 
               const boolean =
                 value.type === "boolean" && value.value ? "true" : "false";
               function isValidUrl(url: string) {
@@ -132,7 +147,13 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                 let jsx = (
                   <span
                     className={`ml-2 ${
-                      value.isArrayParent ? "text-[#FF6B00]" : "text-[#751DEA]"
+                      value.isArrayParent
+                        ? theme === "dark"
+                          ? "text-[#FF8C33]" // Dark mode: softer orange
+                          : "text-[#FF6B00]" // Light mode: vibrant orange
+                        : theme === "dark"
+                        ? "text-[#A873EA]"   // Dark mode: lighter purple
+                        : "text-[#751DEA]"   // Light mode: vibrant purple
                     } max-w-[250px] text-center whitespace-nowrap overflow-hidden text-ellipsis`}
                   >
                     {value.key}
@@ -147,8 +168,12 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                         rel="noopener"
                         className={`ml-2 ${
                           value.isArrayParent
-                            ? "text-[#FF6B00]"
-                            : "text-[#751DEA]"
+                          ? theme === "dark"
+                          ? "text-[#FF8C33]" // Dark mode: softer orange
+                          : "text-[#FF6B00]" // Light mode: vibrant orange
+                        : theme === "dark"
+                        ? "text-[#A873EA]"   // Dark mode: lighter purple
+                        : "text-[#751DEA]"   // Light mode: vibrant purple
                         } max-w-[250px] text-center whitespace-nowrap underline overflow-hidden text-ellipsis`}
                       >
                         {value.key}
@@ -162,7 +187,7 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                     className={`w-full h-full flex justify-between items-center text-[12px] font-[500]`}
                   >
                     {jsx}
-                    <span className="p-[10px]">({value.length})</span>
+                    <span className={`${theme === "dark" ? "text-[#AFAFAF]": "text-[#535353]"}`}>({value.length})</span>
                     <button
                       className="w-10 h-full flex pointer-events-auto justify-center items-center bg-[#465772]"
                       onClick={(e) => handleClick(e, event.node.id)}
@@ -220,7 +245,7 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                     key={idx}
                     className={`w-full block text-[12px] max-w-[650px] whitespace-nowrap overflow-hidden text-ellipsis ${textColor} font-[500] ${padding}`}
                   >
-                    <span className="text-[#751DEA]">{value.key}: </span>
+                    <span className={`${theme === "dark" ? "text-[#A873EA]": "text-[#751DEA]"}`}>{value.key}: </span>
                     <span>
                       <a
                         href={value.value}
@@ -239,7 +264,7 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
                   key={idx}
                   className={`w-full block text-[12px] max-w-[650px] whitespace-nowrap overflow-hidden text-ellipsis ${textColor} font-[500] ${padding}`}
                 >
-                  <span className="text-[#751DEA]">{value.key}: </span>
+                  <span className={`${theme === "dark" ? "text-[#A873EA]": "text-[#751DEA]"}`}>{value.key}: </span>
                   {value.type === "string"
                     ? `"${value.value}"`
                     : value.type === "boolean"
@@ -255,6 +280,6 @@ const CustomeNode = (nodeProps: NodeProps<NodeData>) => {
       </Node>
     </>
   );
-}
+};
 
 export default React.memo(CustomeNode);

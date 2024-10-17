@@ -59,24 +59,23 @@ const lightGrayTheme = {
 const darkGrayTheme = {
   scheme: "Dark Gray",
   author: "Your Name",
-  base00: "#1E1E1E", // Background
-  base01: "#262626", // Lighter background (used for status bars, line number, etc.)
-  base02: "#333333", // Selection background
-  base03: "#BEBEBE", // Comments, invisibles, line highlighting
-  base04: "#A3A3A3", // Darker background (used for status bars)
-  base05: "#FFFFFF", // Default text, variables, classes, identifiers
-  base06: "#AC7B66", // Secondary text, attributes, keywords
-  base07: "#FFBD38", // Darker text, primary content
-  base08: "#FF5555", // Error, invalid text
-  base09: "#FF6347", // Warnings, escape characters
-  base0A: "#32CD32", // Booleans (Lime Green for true/false)
-  base0B: "#FFBD38", // Strings (Warm Yellow)
-  base0C: "#FFBD38", // Support, regular expressions
-  base0D: "#FFBD38", // Functions, methods
-  base0E: "#A55D3A", // Keywords, storage, selector
-  base0F: "#8B0000", // Deprecated tags
+  base00: "#1B1B1B", // Background (dark gray)
+  base01: "#2B2B2B", // Lighter background (status bars, line numbers)
+  base02: "#3A3A3A", // Selection background
+  base03: "#4A4A4A", // Comments, invisibles, line highlighting
+  base04: "#5A5A5A", // Darker background (status bars)
+  base05: "#CFCFCF", // Default text, variables, classes, identifiers
+  base06: "#A9A9A9", // Secondary text, attributes, keywords
+  base07: "#E0E0E0", // Darker text, primary content
+  base08: "#FF4C4C", // Error, invalid text (vibrant red)
+  base09: "#FF7F50", // Warnings, escape characters (Tomato color)
+  base0A: "#FFD700", // Integers, booleans, constants (Gold color)
+  base0B: "#7FFF00", // Strings, inherited class, markup code (Chartreuse color)
+  base0C: "#20B2AA", // Support, regular expressions, escape characters (Light Sea Green)
+  base0D: "#4682B4", // Functions, methods, attribute IDs (Steel Blue)
+  base0E: "#DA70D6", // Keywords, storage, selector (Orchid color)
+  base0F: "#B22222", // Deprecated, opening/closing embedded language tags (Firebrick)
 };
-
 
 
 
@@ -219,7 +218,7 @@ export default function Visualize() {
             <div className="max-h-full w-full overflow-auto">
               <JSONTree
                 data={editorData}
-                theme={theme === "dark" ? darkGrayTheme : lightGrayTheme}
+                theme={ theme === "dark" ? darkGrayTheme: lightGrayTheme}
                 invertTheme={false}
               />
             </div>
