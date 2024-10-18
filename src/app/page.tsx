@@ -1,30 +1,38 @@
 import { LinkIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
-import imgSvg from "@/app/assets/hello.svg";
+import img from "@/app/assets/images/white-bg.jpeg";
+import Link from "next/link";
+
 export default function Home() {
   return (
+    <main className="relative min-h-screen w-screen flex flex-col items-center justify-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src={img}
+          alt="Background"
+          layout="fill"
+          objectFit="cover"
+          quality={100}
+        />
+      </div>
 
-      <main className="min-h-screen w-screen h-screen">
-        <p
-          id="p-e"
-          style={{
-            width: "fit-content",
-            padding: "10px",
-            height: "fit-content",
-            fontSize: 12,
-          }}
-        >
-          squadName: "Super hero squad"
+      {/* <div className="text-center bg-white bg-opacity-80 p-8 rounded-lg shadow-lg z-10"> */}
+        <h1 className="text-5xl font-bold text-[#751DEA]">
+          Welcome to JSON Graph Visualizer
+        </h1>
+        <p className="mt-4 text-lg text-gray-700">
+          Turn your JSON text into interactive graphs effortlessly.
         </p>
-        <span
-          className={`w-full flex justify-center items-center text-[12px] font-[500]`}
-        >
-          homeTown
-          <span className="p-[10px]">(1)</span>
-          <span>
-            <LinkIcon className="w-4" />
-          </span>
-        </span>
-      </main>
+        <div className="mt-8">
+          {/* <Image src={imgSvg} alt="Visualization" width={300} height={300} /> */}
+        </div>
+        <Link href="/visualize">
+          <button className="mt-6 px-6 py-2 bg-[#751DEA] text-white font-semibold rounded-lg shadow-md hover:bg-[#5b12c1] transition duration-300">
+            Start Visualizing
+          </button>
+        </Link>
+      {/* </div> */}
+    </main>
   );
 }

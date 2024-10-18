@@ -16,7 +16,7 @@ type DownloadDataType = {
 };
 
 export default function DownloadModalContent() {
-    const { setIsModalOpen } = useModal();
+  const { setIsModalOpen } = useModal();
   const [downloadData, setDownloadData] = useState<DownloadDataType>({
     fileName: "jsonView",
     fileFormat: "PNG",
@@ -55,11 +55,10 @@ export default function DownloadModalContent() {
     toFormat(document.getElementsByClassName("test-class")[0] as HTMLElement, {
       quality: 1,
       backgroundColor: downloadData.background,
-
     })
       .then((data) => {
         console.log("aftertoSVg", data);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.download = downloadData.fileName;
         link.href = data;
         document.body.appendChild(link);
@@ -138,6 +137,7 @@ export default function DownloadModalContent() {
             <Button
               htmlType="submit"
               type="primary"
+              className="bg-[#751DEA] hover:bg-[#5b12c1] border-none transition duration-300"
               icon={<ArrowDownTrayIcon className="w-4" />}
             >
               Download

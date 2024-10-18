@@ -61,24 +61,32 @@ export default function Header() {
           theme === "dark" ? "text-white" : "text-black"
         } tracking-wide text-2xl ${inter.className}`}
       >
-        <span className="text-[#FFBD38] text-[35px] font-[600]">&#123;</span>
+        <span className="text-[#751DEA] text-[35px] font-[600]">&#123;</span>
         JSON
-        <span className="text-[#FFBD38] text-[35px] font-[600]">
+        <span className="text-[#751DEA] text-[35px] font-[600]">
           &#125;
         </span>{" "}
         VIEW
       </p>
       <button
-        className={`ml-20 font-['inter'] font-[400] hover:border-b hover:border-[#FFBD38] text-lg ${
-          !choice ? " text-[#FFBD38] border-b border-[#FFBD38]" : theme === "dark" ? "text-white": "text-black"
+        className={`ml-20 font-['inter'] font-[400] hover:border-b hover:border-[#751DEA] text-lg ${
+          !choice
+            ? " text-[#751DEA] border-b border-[#751DEA]"
+            : theme === "dark"
+            ? "text-white"
+            : "text-black"
         }  ${inter.className}`}
         onClick={() => setChoice(false)}
       >
         Graph
       </button>
       <button
-        className={`ml-5 font-['inter'] font-[400] hover:border-b  hover:border-[#FFBD38] text-lg ${
-          choice ? " text-[#FFBD38] border-b border-[#FFBD38]" : theme === "dark" ? "text-white": "text-black"
+        className={`ml-5 font-['inter'] font-[400] hover:border-b hover:border-[#751DEA] text-lg ${
+          choice
+            ? " text-[#751DEA] border-b border-[#751DEA]"
+            : theme === "dark"
+            ? "text-white"
+            : "text-black"
         }  ${inter.className}`}
         onClick={() => setChoice(true)}
       >

@@ -6,4 +6,7 @@
     cursor: url('/graphCursor.svg'), auto;
   }
 
+  .ant-btn-primary:hover {
+    background-color: #5b12c1 !important;
+  }
 
