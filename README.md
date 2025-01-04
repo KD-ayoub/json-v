@@ -1,6 +1,9 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a Next.js project that takes a JSON input and transforms it into an interactive graph and tree visualization, using the Reaflow library for graph rendering and react-json-tree for tree representation.
 
 ## Getting Started
+### Prerequisites
+
+Ensure you have the following installed on your machine:
 
 First, run the development server:
 
